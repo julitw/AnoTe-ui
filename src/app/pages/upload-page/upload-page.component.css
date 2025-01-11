@@ -1,0 +1,101 @@
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 500px;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 16px;
+    font-size: 16px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
+}
+
+.message {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    margin: 8px 0;
+    padding: 16px;
+    border-radius: 6px;
+    background-color: #ffffff;
+    color: #333333;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.message.system {
+    align-items: flex-end;
+    background-color: #e9ecef;
+    color: #495057;
+}
+
+.message.user {
+    align-items: flex-start;
+    background-color: #f8f9fa;
+    color: #212529;
+}
+
+.message-sender {
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #6c757d;
+}
+
+.message-content {
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+input[type="file"],
+input[type="text"],
+button {
+    margin-top: 8px;
+    font-size: 14px;
+    padding: 10px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background-color: #ffffff;
+    color: #495057;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+input[type="file"]:hover,
+input[type="text"]:focus,
+button:hover {
+    border-color: #adb5bd;
+    background-color: #f8f9fa;
+}
+
+button {
+    cursor: pointer;
+    background-color: #ffffff;
+    color: #495057;
+    border: 1px solid #ced4da;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+button:hover {
+    background-color: #f1f3f5;
+    color: #212529;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.message {
+    animation: fadeIn 0.5s ease-in-out;
+}

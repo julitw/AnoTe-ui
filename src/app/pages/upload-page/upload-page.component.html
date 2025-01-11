@@ -1,0 +1,32 @@
+<div class="chat-container">
+    <div *ngFor="let message of messages; let i = index" class="message" [class]="setMessageClass(i)">
+        <div class="message-sender">
+            {{message.sender}}
+        </div>
+        <div class="message-content">
+            {{message.text}}
+        </div>
+
+        <div *ngIf="i === 1">
+            <input type="file" (change)="onFileUpload($event)" accept=".csv" />
+        </div>
+        <div *ngIf="i === 3">
+            <div>
+                <input type="text" [(ngModel)]="selectedColumn" />
+                <button (click)="selectColumn()">Zatwierdź</button>
+              </div>
+        </div>
+        <div *ngIf="i === 6">
+            <div *ngFor="let label of labels; let index = index; trackBy: trackByIndex" style="margin-bottom: 8px;">
+                <input 
+                  type="text" 
+                  [(ngModel)]="labels[index]" 
+                  (ngModelChange)="updateLabel(index, $event)" 
+                  placeholder="Wprowadź etykietę" />
+              </div>
+              
+            <button (click)="addLabelField()">+</button>
+            <button (click)="finalizeLabels()">Dodaj etykiety</button>
+        </div>
+    </div>
+  </div>
