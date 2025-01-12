@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { AnnotationService } from 'src/app/services/annotation.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-upload-page',
@@ -18,8 +20,12 @@ export class UploadPageComponent {
   labels: string[] = [];
   newLabel: string = '';
 
+  limitPerPage= 10;
+  index= 0;
 
-  constructor(private http: HttpClient){
+
+
+  constructor(private _annotationService: AnnotationService, private router: Router){
 
   }
 
@@ -77,31 +83,16 @@ export class UploadPageComponent {
     const validLabels = this.labels.filter(label => label.trim() !== '');
     if (validLabels.length > 0) {
       this.messages.push({ sender: 'user', text: `Dodano etykiety: ${validLabels.join(', ')}` });
-      this.generateAnnotations()
-      this.labels = [];
+      if(!this.selectedFile || !this.labels || !this.selectedColumn) return;
+      this._annotationService.setProjectData(this.selectedFile, this.selectedColumn, this.labels)
+      this.router.navigate(['/annotate'])
     } else {
       this.messages.push({ sender: 'system', text: 'Nie podano żadnych etykiet. Proszę spróbować ponownie.' });
     }
   }
 
-  generateAnnotations(){
-    const formData = new FormData();
-    if(!this.selectedFile || !this.labels || !this.selectedColumn ) return;
+  
 
-    formData.append('file', this.selectedFile); 
-    formData.append('labels', this.labels.join(',')); 
-    formData.append('column_name_text', this.selectedColumn);
-
-    this.http.post('http://127.0.0.1:8000/upload/', formData).subscribe(
-      (response) => {
-        console.log('Success:', response);
-        this.messages.push({ sender: 'system', text: 'Poprawnie wysłano dane' });
-      },
-      (error) => {
-        console.error('Error:', error);
-        this.messages.push({ sender: 'system', text: 'Wystąpił problem z przesłaniem danych' });
-      }
-    );
-  }
+  
 
 }

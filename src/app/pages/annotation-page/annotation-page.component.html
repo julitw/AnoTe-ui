@@ -1,0 +1,43 @@
+<div class="page-wrapper">
+    <div class="page-container">
+      <div class="annotation-container">
+        <div class="data-container">
+          <div>
+            <h2>Annotated Data</h2>
+            <!-- Loader -->
+            <div *ngIf="isLoading" class="loader"></div>
+  
+            <!-- Table -->
+            <table *ngIf="!isLoading">
+              <thead>
+                <tr>
+                  <th>Text</th>
+                  <th>Predicted Label</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of annotatedData">
+                  <td>{{ item.text }}</td>
+                  <td>{{ item.predicted_label }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+  
+        <div class="buttons-container">
+          <!-- Display index and limit -->
+          <div class="status">
+            <p>Current Index: {{ index }}</p>
+            <p>Limit: {{ limit }}</p>
+          </div>
+  
+          <!-- Navigation Buttons -->
+          <button (click)="onNextIndex()" class="primary-button">Next</button>
+          <button (click)="updateLimit(limit + 5)" class="secondary-button">Increase Limit</button>
+        </div>
+      </div>
+      <div class="details-container"></div>
+    </div>
+  </div>
+  

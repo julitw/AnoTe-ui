@@ -4,12 +4,14 @@ import { FormsModule } from '@angular/forms'; // Importuj FormsModule
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { UploadPageComponent } from './pages/upload-page/upload-page.component';
-import { HttpClientModule } from '@angular/common/http'; // Dodaj ten import
+import { HttpClientModule } from '@angular/common/http';
+import { AnnotationPageComponent } from './pages/annotation-page/annotation-page.component'; // Dodaj ten import
 
 @NgModule({
   declarations: [
     AppComponent,
-    UploadPageComponent
+    UploadPageComponent,
+    AnnotationPageComponent
   ],
   imports: [
     BrowserModule,
