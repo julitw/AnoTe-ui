@@ -89,13 +89,13 @@ export class UploadPageComponent {
     if(!this.selectedFile || !this.labels || !this.selectedColumn ) return;
 
     formData.append('file', this.selectedFile); 
-    formData.append('strings', this.labels.join(',')); 
-    formData.append('single_string', this.selectedColumn);
+    formData.append('labels', this.labels.join(',')); 
+    formData.append('column_name_text', this.selectedColumn);
 
     this.http.post('http://127.0.0.1:8000/upload/', formData).subscribe(
       (response) => {
         console.log('Success:', response);
-        this.messages.push({ sender: 'system', text: 'Poprawnie wysłano dabne' });
+        this.messages.push({ sender: 'system', text: 'Poprawnie wysłano dane' });
       },
       (error) => {
         console.error('Error:', error);
