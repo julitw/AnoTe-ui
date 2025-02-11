@@ -1,0 +1,120 @@
+
+.card-body{
+    text-align: center;
+}
+
+.table-container{
+    width: 100%;
+    padding: 8px 48px;
+    height: 80vh;
+    min-height: 400px;
+    overflow: auto;
+}
+
+.label-badge {
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 300;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+    border: 1px solid var(--accent-color);
+    background: transparent;
+    color: var(--accent-color);
+  }
+  
+
+
+.btn-modal{
+    padding: 16px 64px;
+    border-radius: 20px;
+    font-size: 16px;
+}
+
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+ 
+}
+
+.modal-content {
+    background: var(--background-color);
+    padding: 32px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    width: 800px;
+    min-height: 600px;
+    max-width: 90%;
+    border: 2px solid var(--text-color);
+    box-shadow: 0 0 10px var(--text-color);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--position-border-color);
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.modal-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--accent-color);
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--text-color);
+    transition: color 0.3s;
+}
+
+.close-btn:hover {
+    color: var(--accent-color);
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.modal-body label {
+    font-size: 18px;
+    color: var(--text-color);
+    font-weight: bold;
+}
+
+.modal-body input[type="text"],
+.modal-body input[type="file"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--position-border-color);
+    border-radius: 6px;
+    font-size: 18px;
+    background: #222;
+    color: white;
+    margin: 8px 0
+}
+
+.modal-body button {
+    margin-top: 10px;
+    width: 70%;
+    padding: 12px;
+    font-size: 18px;
+    cursor: pointer;
+}

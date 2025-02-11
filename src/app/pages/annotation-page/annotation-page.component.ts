@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MyProjectsService } from 'src/app/services/my-projects.service';
 
@@ -20,6 +20,9 @@ export class AnnotationPageComponent implements OnInit {
   project!: Project;
   annotatedData: any[] = [];
   loading = false;
+  isFirstDataLoaded = false;
+
+  @ViewChild('tableContainer') tableContainer!: ElementRef;
 
   constructor(private route: ActivatedRoute, private projectService: MyProjectsService) {}
 
@@ -36,7 +39,6 @@ export class AnnotationPageComponent implements OnInit {
         lastAnnotatedIndex: response.last_annotated_index
       };
 
-      // Pobierz dane anotacji od początku do zaanotowanego indeksu
       this.loadAnnotatedData();
     });
   }
@@ -59,7 +61,9 @@ export class AnnotationPageComponent implements OnInit {
     this.projectService.annotateProject(this.project.id, limit).subscribe(
       response => {
         console.log('Anotacja zakończona:', response.results);
+
         this.annotatedData = [...this.annotatedData, ...response.results];
+
         if (this.project && this.project.lastAnnotatedIndex !== undefined) {
           this.project.lastAnnotatedIndex += limit;
         } else {
@@ -67,6 +71,8 @@ export class AnnotationPageComponent implements OnInit {
         }
 
         this.loading = false;
+        this.scrollToBottom(); // Przewinięcie do dołu
+        this.isFirstDataLoaded = true;
       },
       error => {
         console.error('Błąd podczas anotacji:', error);
@@ -76,9 +82,22 @@ export class AnnotationPageComponent implements OnInit {
     );
   }
 
+  scrollToBottom() {
+    setTimeout(() => {
+      if (this.tableContainer) {
+        this.tableContainer.nativeElement.scrollTop = this.tableContainer.nativeElement.scrollHeight;
+      }
+    }, 100);
+  }
+
+  getHighlightedClass(index: number): string {
+    const total = this.annotatedData.length;
+    return index >= total - 10 ? 'new-annotation' : '';
+  }
+
   downloadAnnotatedFile() {
     if (!this.project) return;
-  
+
     this.projectService.downloadAnnotatedFile(this.project.id).subscribe(response => {
       const blob = new Blob([response], { type: 'text/csv' });
       const url = window.URL.createObjectURL(blob);

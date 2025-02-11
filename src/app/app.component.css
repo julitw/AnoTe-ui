@@ -1,0 +1,43 @@
+.app-container{
+  height: 100vh;
+  overflow: auto;
+}
+
+.navbar{
+  height: 5vh;
+  min-height: 50px;
+  border-bottom: 1px dashed var(--position-border-color);
+  display: flex;
+  align-items: center;
+  padding-left: 16px;
+  
+}
+
+
+.navbar-brand {
+  font-size: 32px;
+  font-weight: bold;
+  color: var(--accent-color);
+  text-decoration: none;
+  letter-spacing: 1px;
+  font-family: var(--font-secondary);
+}
+
+.nav-links a {
+  color: var(--text-color);
+  text-decoration: none;
+  font-size: 18px;
+  margin-left: 20px;
+  transition: color 0.3s ease-in-out;
+}
+
+.nav-links a:hover {
+  color: var(--accent-color)
+}
+
+.container{
+  height: 95vh;
+  overflow: auto;
+}
+
+

@@ -1,1 +1,140 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Poppins:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400&display=swap');
+
+:root {
+    --background-color: #000000;
+    --card-background: #111111;
+    --text-color: #ffffffc4;
+    --accent-color: #af7ace; 
+    --border-color: #333333;
+    --table-header-bg: #111111;
+    --row-hover-bg: #222222;
+    --font-primary: 'Inter', sans-serif;
+    --font-secondary: 'Plus Jakarta Sans', sans-serif;
+    --position-border-color: rgba(236, 187, 229, 0.301);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: var(--font-primary);
+}
+
+.card{
+    display: flex;
+    flex-direction: column;
+    height: 90vh;
+}
+
+.card-header{
+    height: 10vh;
+    display: flex;
+    align-items: center;
+    font-family: var(--font-secondary);
+    font-size: 32px;
+    justify-content: flex-start;
+    padding: 16px 48px;
+}
+
+
+.btn {
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 300;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+    border: 1px solid var(--accent-color);
+    background: var(--accent-color);
+    color:  black;
+  }
+
+  .btn:hover {
+    background-color: black;
+    color: var(--accent-color);
+  }
+  
+
+  .labels-container, .buttons-container{
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 250px;
+    gap: 5px
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+  }
+  
+  .table th, .table td {
+    padding: 20px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .table th {
+    position: sticky;
+    top: 0;
+    background-color: black;
+    color: var(--text-color);
+    font-weight: 300;
+    text-transform: uppercase;
+    font-size: 16px;
+    letter-spacing: 1px;
+  }
+  
+  .table td {
+    background-color: black;
+    color: white;
+    font-weight: 200;
+    font-size: 16px;
+  }
+
+
+::-webkit-scrollbar {
+    width: 6px; /* Szerokość paska */
+  }
+  
+::-webkit-scrollbar-track {
+background: #2c2c2c; 
+border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+background: #555; /* Ciemniejszy kolor uchwytu */
+border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+background: #777;
+}
+  
+
+
+
+/* HTML: <div class="loader"></div> */
+.loader {
+    width: 60px;
+    aspect-ratio: 2;
+    --_g: no-repeat radial-gradient(circle closest-side, var(--accent-color), 90%,#0000);
+    background: 
+      var(--_g) 0%   50%,
+      var(--_g) 50%  50%,
+      var(--_g) 100% 50%;
+    background-size: calc(100%/3) 50%;
+    animation: l3 1s infinite linear;
+  }
+  @keyframes l3 {
+      20%{background-position:0%   0%, 50%  50%,100%  50%}
+      40%{background-position:0% 100%, 50%   0%,100%  50%}
+      60%{background-position:0%  50%, 50% 100%,100%   0%}
+      80%{background-position:0%  50%, 50%  50%,100% 100%}
+  }

@@ -6,7 +6,7 @@ import { MyProjectsService } from 'src/app/services/my-projects.service';
 interface Project {
   id: number;
   name: string;
-  labels: string;
+  labels: string[];
   textColumn: string;
   labelsColumn: string;
   annotated?: number;
@@ -20,6 +20,8 @@ interface Project {
   styleUrls: ['./my-projects.component.css']
 })
 export class MyProjectsComponent implements OnInit {
+
+  isNewProjectPopupOpen: boolean =  false;
 
   projects: Project[] = []
 
@@ -60,7 +62,7 @@ export class MyProjectsComponent implements OnInit {
         this.projects.push({
           id: project.id,
           name: project.name ,
-          labels: project.available_labels,
+          labels: this._parseLabels(project.available_labels),
           textColumn: project.column_text_name,
           labelsColumn: project.column_label_name,
           annotated: 0,
@@ -68,7 +70,17 @@ export class MyProjectsComponent implements OnInit {
         })
       })
     });
+
+    console.log(this.projects)
   }
+
+  _parseLabels(labels: any): string[] {
+    try {
+        return typeof labels === "string" ? JSON.parse(labels) : Array.isArray(labels) ? labels : [];
+    } catch (error) {
+        console.error("Błąd parsowania etykiet:", error);
+        return [];
+    }}
 
   updateLabel(index: number, event: any) {
     this.newProject.availableLabels[index] = event.target.value;
@@ -97,7 +109,13 @@ export class MyProjectsComponent implements OnInit {
     }
   }
   
+  openModal(){
+    this.isNewProjectPopupOpen = !this.isNewProjectPopupOpen
+  }
   
+  closeModal(){
+    this.isNewProjectPopupOpen = false;
+  }
   
 
 }

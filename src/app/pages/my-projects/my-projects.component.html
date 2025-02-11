@@ -1,69 +1,74 @@
 <div class="card">
-    <div class="card-header">My Projects</div>
-    <div class="card-body">
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th>Nazwa</th>
-            <th>Etykiety</th>
-            <th>Ilość danych zaanotowanych</th>
-            <th>Ilość danych</th>
-            <th>Akcje</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let project of projects">
-            <td>{{ project.name }}</td>
-            <td>{{ project.labels }}</td>
-            <td>{{ project.annotated }}</td>
-            <td>{{ project.total }}</td>
-            <td>
-                <button class="btn btn-info me-2" (click)="annotateProject(project.id)">Annotate</button>
-                <button class="btn btn-danger" (click)="deleteProject(project.id)">Delete</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#addProjectModal">Add New Project</button>
-    </div>
-  </div>
-  
-  <!-- Modal for Adding Project -->
-  <div class="modal fade" id="addProjectModal" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Add New Project</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <form (ngSubmit)="addProject()">
-            <div class="mb-3">
-              <label class="form-label">Nazwa projektu</label>
-              <input type="text" [(ngModel)]="newProject.name" name="name" class="form-control" required>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Plik z danymi</label>
-              <input type="file" (change)="onFileSelected($event)" class="form-control" required>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Nazwa kolumny z tekstem</label>
-              <input type="text" [(ngModel)]="newProject.columnTextName" name="columnTextName" class="form-control" required>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Nazwa kolumny z labelami</label>
-              <input type="text" [(ngModel)]="newProject.columnLabelName" name="columnLabelName" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Dostępne labele</label>
-                <div *ngFor="let label of newProject.availableLabels; let i = index; trackBy: trackByIndex" class="input-group mb-2">
-                  <input type="text" [(ngModel)]="newProject.availableLabels[i]" name="availableLabels{{i}}" class="form-control" required>
-                  <button type="button" class="btn btn-outline-secondary" (click)="addLabelField()">+</button>
-                </div>
-            </div>            
-            <button type="submit" class="btn btn-primary">Add Project</button>
-          </form>
-        </div>
+  <div class="card-header">My Projects</div>
+  <div class="card-body">
+      <div class="table-container">
+          <table class="table">
+              <thead>
+                  <tr>
+                      <th>Project's name</th>
+                      <th>Labels</th>
+                      <th>Number of annotated data</th>
+                      <th>Total data</th>
+                      <th>Actions</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr *ngFor="let project of projects">
+                      <td>{{ project.name }}</td>
+                      <td>
+                        <div class="labels-container">
+                            <div *ngFor="let label of project.labels" class="label-badge">
+                              {{ label }}
+                            </div>
+                          </div>
+                      </td>
+                      <td>{{ project.annotated }}</td>
+                      <td>{{ project.total }}</td>
+                      <td>
+                        <div class="buttons-container">
+                            <button class="btn btn-primary" (click)="annotateProject(project.id)">Annotate</button>
+                            <button class="btn btn-danger" (click)="deleteProject(project.id)">Delete</button>
+                        </div>
+                         
+                      </td>
+                  </tr>
+              </tbody>
+          </table>
       </div>
-    </div>
+
+      <button class="btn btn-modal" (click)="openModal()">Add New Project</button>
   </div>
+</div>
+
+<!-- Modal for Adding Project -->
+<div class="modal" id="addProjectModal" *ngIf="isNewProjectPopupOpen">
+  <div class="modal-content">
+      <div class="modal-header">
+          <h5 class="modal-title">New Project</h5>
+          <button class="close-btn" (click)="closeModal()">✖</button>
+      </div>
+      <div class="modal-body">
+          <form (ngSubmit)="addProject()">
+              <label>Nazwa projektu</label>
+              <input type="text" [(ngModel)]="newProject.name" name="name" required>
+
+              <label>Plik z danymi</label>
+              <input type="file" (change)="onFileSelected($event)" required>
+
+              <label>Nazwa kolumny z tekstem</label>
+              <input type="text" [(ngModel)]="newProject.columnTextName" name="columnTextName" required>
+
+              <label>Nazwa kolumny z labelami</label>
+              <input type="text" [(ngModel)]="newProject.columnLabelName" name="columnLabelName" required>
+
+              <label>Dostępne labele</label>
+              <div *ngFor="let label of newProject.availableLabels; let i = index;">
+                  <input type="text" [(ngModel)]="newProject.availableLabels[i]" required>
+                  <button type="button" onclick="addLabelField()">+</button>
+              </div>
+
+              <button type="submit" class="btn btn-primary">Add Project</button>
+          </form>
+      </div>
+  </div>
+</div>

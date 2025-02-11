@@ -1,38 +1,47 @@
-<div *ngIf="project" class="project-details">
-  <!-- <div class="project-card">
-    <h6 class="project-title">Projekt: {{ project.name }}</h6>
-    <div class="project-info">
-      <p><strong>Tekst:</strong> {{ project.textColumn }}</p>
-      <p><strong>Etykiety:</strong> {{ project.labelsColumn }}</p>
-      <p><strong>Dostępne:</strong> {{ project.labels }}</p>
-    </div> -->
-  <!-- </div> -->
+<div *ngIf="project" class="card">
+    <div class="card-header">My Annotations</div>
+  
+    <div class="annotation-container">
+      <div class="options-container">
+        <button (click)="annotatePartially(10)" class="btn btn-primary" [disabled]="loading">Annotate next 10 records</button>
+        <button (click)="downloadAnnotatedFile()" class="btn btn-success">Download file</button>
+      </div>
+  
+      <div class="data-container">
+        <div class="table-wrapper">
+          <div class="table-container" #tableContainer>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>No.</th>
+                  <th>Text</th>
+                  <th>Predicted label</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let record of annotatedData.slice(0, project.lastAnnotatedIndex); let i = index"
+                [ngClass]="{'new-annotation': i >= annotatedData.length - 10 && isFirstDataLoaded}">
 
-  <button (click)="annotatePartially(10)" class="btn-primary" [disabled]="loading">Anotuj 10 rekordów</button>
-  <button (click)="downloadAnnotatedFile()" class="btn-success">Pobierz plik</button>
-
-  <div class="table-container">
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Tekst</th>
-          <th>Przewidywana etykieta</th>
-          <th>Oryginalna etykieta</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let record of annotatedData.slice(0, project.lastAnnotatedIndex); let i = index">
-          <td>{{ i + 1 }}</td>
-          <td>{{ record.text }}</td>
-          <td>{{ record.predicted_label }}</td>
-          <td>{{ record.original_label }}</td>
-        </tr>
-      </tbody>
-    </table>
+                  <td>{{ i + 1 }}</td>
+                  <td>{{ record.text }}</td>
+                  <td>{{ record.predicted_label }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <ng-container *ngIf="loading">
+            <ng-template [ngTemplateOutlet]="loaderTemplate"></ng-template>
+          </ng-container>
+        </div>
+  
+        <div class="statistics-container"></div>
+      </div>
+    </div>
   </div>
-
-  <div *ngIf="loading" class="loader-container">
-    <div class="loader"></div>
-  </div>
-</div>
+  
+  <ng-template #loaderTemplate>
+    <div class="loader-wrapper">
+      <div class="loader"></div>
+    </div>
+  </ng-template>
+  
