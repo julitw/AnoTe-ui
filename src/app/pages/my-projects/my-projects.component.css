@@ -6,6 +6,7 @@
 .table-container{
     width: 100%;
     padding: 8px 48px;
+    padding-top: 0;
     height: 75vh;
     min-height: 400px;
     overflow: auto;
@@ -152,6 +153,8 @@
     gap: 12px;
     max-width: 600px;
     margin: 0 auto;
+    max-height: 400px ;
+    overflow: auto;
 }
 
 .summary-item {

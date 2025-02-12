@@ -22,13 +22,7 @@ export class MyProjectsService {
 
   constructor(private http: HttpClient) { }
 
-  addProject(project: any): Observable<any> {
-    const formData = new FormData();
-    formData.append('name', project.name);
-    formData.append('file', project.file);
-    formData.append('column_text_name', project.columnTextName);
-    formData.append('column_label_name', project.columnLabelName);
-    formData.append('available_labels', JSON.stringify(project.availableLabels));
+  addProject(formData: any): Observable<any> {
 
     return this.http.post(`${this.apiUrl}/add`, formData);
   }

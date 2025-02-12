@@ -113,8 +113,22 @@ export class MyProjectsComponent implements OnInit {
       alert('Proszę uzupełnić wszystkie wymagane pola.');
       return;
     }
+  
+    const formData = new FormData();
+    
 
-    this.projectService.addProject(this.newProject).subscribe(
+  
+    formData.append('name', this.newProject.name);
+    formData.append('file', this.newProject.file!);
+    formData.append('column_text_name', this.newProject.columnTextName);
+    formData.append('column_label_name', this.newProject.columnLabelName);
+    formData.append('available_labels', JSON.stringify(this.newProject.availableLabels));
+  
+    for (let pair of (formData as any).entries()) {
+      console.log(`${pair[0]}:`, pair[1]);
+    }
+
+    this.projectService.addProject(formData).subscribe(
       () => {
         alert('Projekt dodany pomyślnie!');
         this.loadProjects();
@@ -128,11 +142,12 @@ export class MyProjectsComponent implements OnInit {
         };
       },
       error => {
-        console.error('Błąd dodawania projektu:', error);
-        alert('Nie udało się dodać projektu.');
+        alert(`Nie udało się dodać projektu. Błąd: ${error.error?.detail || 'Nieznany błąd'}`);
       }
     );
   }
+  
+  
 
   loadProjects(): void {
     this.projectService.getProjects().subscribe(projects => {
@@ -142,10 +157,14 @@ export class MyProjectsComponent implements OnInit {
         labels: this.parseLabels(project.available_labels),
         textColumn: project.column_text_name,
         labelsColumn: project.column_label_name,
-        annotated: project.annotated || 0,
-        total: project.total || 0
+        annotated: project.last_annotated_index || 0,
+        total: project.row_count || 0
       }));
+
+      console.log(this.projects)
     });
+
+   
   }
 
   parseLabels(labels: any): string[] {

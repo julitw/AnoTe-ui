@@ -11,11 +11,15 @@ export class CustomFileUploadComponent {
   fileName: string = '';
 
   onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      this.fileName = file.name;
-      this.fileSelected.emit(file);
+    const target = event.target as HTMLInputElement;
+    if (target.files && target.files.length > 0) {
+      const file = target.files[0];
+      if (file) {
+        this.fileName = file.name;
+        this.fileSelected.emit(file);
+      }
     }
+   
   }
 
 }
