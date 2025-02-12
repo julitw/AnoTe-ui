@@ -54,7 +54,7 @@ body {
     border: 1px solid var(--accent-color);
     background: var(--accent-color);
     color:  black;
-    min-width: 150px;
+    min-width: 80px;
   }
 
   .btn:hover {
@@ -116,6 +116,7 @@ body {
 
 ::-webkit-scrollbar {
     width: 6px; /* Szerokość paska */
+    height: 6px;
   }
   
 ::-webkit-scrollbar-track {
