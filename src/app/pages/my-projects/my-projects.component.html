@@ -40,35 +40,101 @@
   </div>
 </div>
 
-<!-- Modal for Adding Project -->
-<div class="modal" id="addProjectModal" *ngIf="isNewProjectPopupOpen">
-  <div class="modal-content">
+<div class="modal" *ngIf="isNewProjectPopupOpen">
+    <div class="modal-content">
       <div class="modal-header">
-          <h5 class="modal-title">New Project</h5>
-          <button class="close-btn" (click)="closeModal()">✖</button>
+        <h5 class="modal-title">New Project</h5>
+        <button class="close-btn" (click)="closeModal()">✖</button>
       </div>
+  
       <div class="modal-body">
-          <form (ngSubmit)="addProject()">
-              <label>Nazwa projektu</label>
-              <input type="text" [(ngModel)]="newProject.name" name="name" required>
+        <form (ngSubmit)="addProject()">
+          
+          <!-- ETAP 1: NAZWA I PLIK -->
+          <div *ngIf="currentStep === 1">
+            <app-custom-input 
+              [value]="newProject.name"
+              label="Nazwa projektu" 
+              (valueChange)="changeProjectName($event)">
+            </app-custom-input>
+  
+            <app-custom-file-upload 
+              (fileSelected)="onFileSelected($event)">
+            </app-custom-file-upload>
 
-              <label>Plik z danymi</label>
-              <input type="file" (change)="onFileSelected($event)" required>
+            <div class="buttons-container-modal">
+                <button class="btn-secondary">Close</button>
+                <button class='btn' (click)="nextStep()" [disabled]="!newProject.file">Next</button>
+            </div>
+  
+          </div>
+  
+          <!-- ETAP 2: WYBÓR KOLUMN -->
+          <div *ngIf="currentStep === 2">
+            <app-custom-dropdown 
+              label="Text column"
+              [options]="columnNames" 
+              placeholder="Wybierz kolumnę z tekstem"
+              (selectedChange)="newProject.columnTextName = $event">
+            </app-custom-dropdown>
+  
+            <app-custom-dropdown 
+              label="Labels column"
+              [options]="columnNames" 
+              placeholder="Wybierz kolumnę z labelami"
+              (selectedChange)="newProject.columnLabelName = $event">
+            </app-custom-dropdown>
 
-              <label>Nazwa kolumny z tekstem</label>
-              <input type="text" [(ngModel)]="newProject.columnTextName" name="columnTextName" required>
-
-              <label>Nazwa kolumny z labelami</label>
-              <input type="text" [(ngModel)]="newProject.columnLabelName" name="columnLabelName" required>
-
-              <label>Dostępne labele</label>
-              <div *ngFor="let label of newProject.availableLabels; let i = index;">
-                  <input type="text" [(ngModel)]="newProject.availableLabels[i]" required>
-                  <button type="button" onclick="addLabelField()">+</button>
+            <div class="buttons-container-modal">
+                <button class="btn-secondary" (click)="prevStep()">Previous</button>
+                <button class="btn" (click)="nextStep()">Next</button>
+            </div>
+  
+     
+          </div>
+  
+          <!-- ETAP 3: ZNALEZIONE LABELE -->
+          <div *ngIf="currentStep === 3">
+            
+            <div class="summary-card">
+              <div class="summary-item">
+                <span class="summary-label">Name:</span>
+                <span class="summary-value">{{ newProject.name }}</span>
               </div>
+          
+              <div class="summary-item">
+                <span class="summary-label">File:</span>
+                <span class="summary-value">{{ newProject.file?.name || 'Brak pliku' }}</span>
+              </div>
+          
+              <div class="summary-item">
+                <span class="summary-label">Text column</span>
+                <span class="summary-value">{{ newProject.columnTextName }}</span>
+              </div>
+          
+              <div class="summary-item">
+                <span class="summary-label"> Labels column:</span>
+                <span class="summary-value">{{ newProject.columnLabelName }}</span>
+              </div>
+          
+              <div class="summary-item">
+                <span class="summary-label">Labels:</span>
+                <div class="labels-container">
+                  <div *ngFor="let label of newProject.availableLabels" class="label-badge">
+                    {{ label }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="buttons-container-modal">
+                <button class="btn-secondary" (click)="prevStep()">Next</button>
+                <button class="btn" type="submit">Add project</button>
+            </div>
 
-              <button type="submit" class="btn btn-primary">Add Project</button>
-          </form>
+          </div>
+  
+        </form>
       </div>
+    </div>
   </div>
-</div>
+  

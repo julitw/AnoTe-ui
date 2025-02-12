@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Form } from '@angular/forms';
 import { Observable } from 'rxjs';
 
 interface Project {
@@ -55,5 +56,12 @@ export class MyProjectsService {
     return this.http.delete(`${this.apiUrl}/${projectId}`);
   }
   
+  fetchColumns(formDataFile: FormData): Observable<any>{
+    return  this.http.post<{ unique_values: string[] }>(`${this.apiUrl}/get_columns`, formDataFile)
+  }
+
+  fetchUniqueLabels(formData: FormData): Observable<any>{
+    return this.http.post<{ unique_values: string[] }>(`${this.apiUrl}/get_unique_values`, formData)
+  }
   
 }

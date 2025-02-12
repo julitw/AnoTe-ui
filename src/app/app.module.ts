@@ -5,13 +5,19 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { AnnotationPageComponent } from './pages/annotation-page/annotation-page.component';
-import { MyProjectsComponent } from './pages/my-projects/my-projects.component'; // Dodaj ten import
+import { MyProjectsComponent } from './pages/my-projects/my-projects.component';
+import { CustomInputComponent } from './elements/custom-input/custom-input.component';
+import { CustomDropdownComponent } from './elements/custom-dropdown/custom-dropdown.component';
+import { CustomFileUploadComponent } from './elements/custom-file-upload/custom-file-upload.component'; // Dodaj ten import
 
 @NgModule({
   declarations: [
     AppComponent,
     AnnotationPageComponent,
-    MyProjectsComponent
+    MyProjectsComponent,
+    CustomInputComponent,
+    CustomDropdownComponent,
+    CustomFileUploadComponent
   ],
   imports: [
     BrowserModule,

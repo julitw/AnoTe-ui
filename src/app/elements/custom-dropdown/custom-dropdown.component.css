@@ -1,0 +1,37 @@
+.custom-dropdown{
+  margin: 16px 0;
+}
+.label-badge {
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 300;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+  border: 1px solid var(--accent-color);
+  background: transparent;
+  color: var(--accent-color);
+}
+
+.dropdown-options-container{
+  background-color: var(--card-background);
+  border-radius: 4px;
+  margin-top: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.dropdown-options{
+  display: flex;
+  gap: 8px;
+  max-width: 250px;
+  flex-wrap: wrap;
+  padding: 8px 16px;
+
+}
+
+.selected{
+  color: var(--background-color);
+  background: var(--accent-color);
+  transition: background 0.3s ease-in-out;
+}

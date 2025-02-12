@@ -1,0 +1,20 @@
+p{
+  margin-bottom: 8px;
+}
+.custom-input-field {
+  background-color: var(--card-background);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  padding: 8px;
+  font-size: 20px;
+  border-radius: 4px;
+  width: 100%;
+  outline: none;
+  transition: border 0.3s ease-in-out;
+  margin-bottom: 16px;
+}
+
+.custom-input-field:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 5px var(--accent-color);
+}

@@ -1,0 +1,10 @@
+<p>File</p>
+<div class="custom-file-upload" (click)="fileInput.click()">
+    <span>{{ fileName || 'Wybierz plik' }}</span>
+    <input 
+      type="file" 
+      #fileInput 
+      (change)="onFileSelected($event)" 
+      hidden
+    />
+  </div>

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MyProjectsService } from 'src/app/services/my-projects.service';
-
+import { HttpClient } from '@angular/common/http';
 
 interface Project {
   id: number;
@@ -10,9 +10,8 @@ interface Project {
   textColumn: string;
   labelsColumn: string;
   annotated?: number;
-  total?: number ;
+  total?: number;
 }
-
 
 @Component({
   selector: 'app-my-projects',
@@ -20,86 +19,163 @@ interface Project {
   styleUrls: ['./my-projects.component.css']
 })
 export class MyProjectsComponent implements OnInit {
-
-  isNewProjectPopupOpen: boolean =  false;
-
-  projects: Project[] = []
+  isNewProjectPopupOpen = false;
+  currentStep = 1;
+  projects: Project[] = [];
+  columnNames: string[] = [];
+  uniqueLabels: string[] = [];
 
   newProject = {
     name: '',
-    file: null,
+    file: null as File | null,
     columnTextName: '',
     columnLabelName: '',
     availableLabels: ['']
   };
 
-  constructor(private projectService: MyProjectsService, private router: Router ){
-  }
+  constructor(
+    private projectService: MyProjectsService,
+    private router: Router,
+    private http: HttpClient
+  ) {}
 
   ngOnInit(): void {
-    this.loadProjects()
+    this.loadProjects();
   }
 
-  onFileSelected(event: any) {
-    this.newProject.file = event.target.files[0];
+  onFileSelected(file: File): void {
+    this.newProject.file = file;
+    this.fetchColumnNames();
   }
 
-  addLabelField() {
-    this.newProject.availableLabels.push('');
+  fetchColumnNames(): void {
+    if (!this.newProject.file) return;
+    
+    const formData = new FormData();
+    formData.append('file', this.newProject.file);
+
+    this.projectService.fetchColumns(formData).subscribe(
+      response => {
+        if (!response.columns.length) {
+          alert('Plik nie zawiera nagłówków!');
+        }
+        this.columnNames = response.columns;
+      },
+      error => {
+        console.error('Błąd pobierania nazw kolumn:', error);
+        alert('Wystąpił błąd podczas pobierania kolumn.');
+      }
+    );
   }
 
-  addProject() {
-    this.projectService.addProject(this.newProject).subscribe(response => {
-      alert('Projekt dodany pomyślnie!');
-      this.loadProjects();
-    });
+  fetchUniqueLabels(): void {
+    if (!this.newProject.file || !this.newProject.columnLabelName) return;
+    
+    const formData = new FormData();
+    formData.append('file', this.newProject.file);
+    formData.append('column_name', this.newProject.columnLabelName);
+
+    this.projectService.fetchUniqueLabels(formData).subscribe(
+      response => {
+        this.uniqueLabels = response.unique_values.length ? response.unique_values : ['Brak etykiet'];
+        this.newProject.availableLabels = this.uniqueLabels;
+      },
+      error => {
+        console.error('Błąd pobierania unikalnych etykiet:', error);
+        alert('Nie udało się pobrać dostępnych etykiet.');
+      }
+    );
   }
 
-  loadProjects() {
+  nextStep(): void {
+    if (this.currentStep === 1 && (!this.newProject.file || !this.newProject.name)) {
+      alert('Proszę podać nazwę projektu i wybrać plik.');
+      return;
+    }
+    if (this.currentStep === 2 && (!this.newProject.columnTextName || !this.newProject.columnLabelName)) {
+      alert('Proszę wybrać odpowiednie kolumny.');
+      return;
+    }
+    if (this.currentStep === 2) {
+      this.fetchUniqueLabels();
+    }
+    this.currentStep++;
+  }
+
+  prevStep(): void {
+    if (this.currentStep > 1) {
+      this.currentStep--;
+    }
+  }
+
+  addProject(): void {
+    if (!this.newProject.name || !this.newProject.file || !this.newProject.columnTextName || !this.newProject.columnLabelName) {
+      alert('Proszę uzupełnić wszystkie wymagane pola.');
+      return;
+    }
+
+    this.projectService.addProject(this.newProject).subscribe(
+      () => {
+        alert('Projekt dodany pomyślnie!');
+        this.loadProjects();
+        this.closeModal();
+        this.newProject = {
+          name: '',
+          file: null as File | null,
+          columnTextName: '',
+          columnLabelName: '',
+          availableLabels: ['']
+        };
+      },
+      error => {
+        console.error('Błąd dodawania projektu:', error);
+        alert('Nie udało się dodać projektu.');
+      }
+    );
+  }
+
+  loadProjects(): void {
     this.projectService.getProjects().subscribe(projects => {
-      console.log(projects)
-      projects.forEach((project) => {
-        this.projects.push({
-          id: project.id,
-          name: project.name ,
-          labels: this._parseLabels(project.available_labels),
-          textColumn: project.column_text_name,
-          labelsColumn: project.column_label_name,
-          annotated: 0,
-          total: 0
-        })
-      })
+      this.projects = projects.map(project => ({
+        id: project.id,
+        name: project.name,
+        labels: this.parseLabels(project.available_labels),
+        textColumn: project.column_text_name,
+        labelsColumn: project.column_label_name,
+        annotated: project.annotated || 0,
+        total: project.total || 0
+      }));
     });
-
-    console.log(this.projects)
   }
 
-  _parseLabels(labels: any): string[] {
+  parseLabels(labels: any): string[] {
     try {
-        return typeof labels === "string" ? JSON.parse(labels) : Array.isArray(labels) ? labels : [];
+      return typeof labels === 'string' ? JSON.parse(labels) : Array.isArray(labels) ? labels : [];
     } catch (error) {
-        console.error("Błąd parsowania etykiet:", error);
-        return [];
-    }}
-
-  updateLabel(index: number, event: any) {
-    this.newProject.availableLabels[index] = event.target.value;
-  }
-  trackByIndex(index: number, item: any): number {
-    return index;
+      console.error('Błąd parsowania etykiet:', error);
+      return [];
+    }
   }
 
-  annotateProject(id: number) {
+  openModal(): void {
+    this.isNewProjectPopupOpen = true;
+    this.currentStep = 1;
+  }
+
+  closeModal(): void {
+    this.isNewProjectPopupOpen = false;
+  }
+
+  annotateProject(id: number): void {
     this.router.navigate([`/my-projects/${id}/annotate`]);
   }
 
-  deleteProject(projectId: number) {
-  
-    if (confirm(`Czy na pewno chcesz usunąć projekt`)) {
+  deleteProject(projectId: number): void {
+    if (confirm('Czy na pewno chcesz usunąć projekt?')) {
       this.projectService.deleteProject(projectId).subscribe(
-        response => {
+        () => {
           alert('Projekt został usunięty.');
-          window.location.href = '/my-projects';  // Przekierowanie na stronę listy projektów
+          this.loadProjects();
         },
         error => {
           console.error('Błąd podczas usuwania projektu:', error);
@@ -108,14 +184,8 @@ export class MyProjectsComponent implements OnInit {
       );
     }
   }
-  
-  openModal(){
-    this.isNewProjectPopupOpen = !this.isNewProjectPopupOpen
-  }
-  
-  closeModal(){
-    this.isNewProjectPopupOpen = false;
-  }
-  
 
+  changeProjectName(name: string): void {
+    this.newProject.name = name;
+  }
 }

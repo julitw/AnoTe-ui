@@ -1,0 +1,16 @@
+<div class="custom-dropdown">
+  <p>{{label}}</p>
+  <div class="dropdown-options-container">
+    <div class="dropdown-options">
+      <div 
+        *ngFor="let option of options; let i = index" 
+        class="label-badge" 
+        (click)="selectOption(i)"
+        [ngClass]="{'selected': i ===  selectedIndex}"
+      >
+        {{ option }}
+      </div>
+    </div>
+  </div>
+
+</div>
