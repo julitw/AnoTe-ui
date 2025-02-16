@@ -21,6 +21,7 @@ export class AnnotationPageComponent implements OnInit {
   annotatedData: any[] = [];
   loading = false;
   isFirstDataLoaded = false;
+  limit = 10;
 
   @ViewChild('tableContainer') tableContainer!: ElementRef;
 
@@ -55,17 +56,17 @@ export class AnnotationPageComponent implements OnInit {
     );
   }
 
-  annotatePartially(limit: number) {
+  annotatePartially() {
     if (!this.project) return;
     this.loading = true;
-    this.projectService.annotateProject(this.project.id, limit).subscribe(
+    this.projectService.annotateProject(this.project.id, this.limit).subscribe(
       response => {
         console.log('Anotacja zakończona:', response.results);
 
         this.annotatedData = [...this.annotatedData, ...response.results];
 
         if (this.project && this.project.lastAnnotatedIndex !== undefined) {
-          this.project.lastAnnotatedIndex += limit;
+          this.project.lastAnnotatedIndex = response.last_index;
         } else {
           console.warn('Nie można zaktualizować indeksu anotacji, ponieważ projekt nie został jeszcze załadowany.');
         }
@@ -92,7 +93,7 @@ export class AnnotationPageComponent implements OnInit {
 
   getHighlightedClass(index: number): string {
     const total = this.annotatedData.length;
-    return index >= total - 10 ? 'new-annotation' : '';
+    return index >= total - this.limit ? 'new-annotation' : '';
   }
 
   downloadAnnotatedFile() {

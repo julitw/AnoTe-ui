@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Form } from '@angular/forms';
 import { Observable } from 'rxjs';
+import { ApiService } from './api.service';
 
 interface Project {
   id: number;
@@ -10,52 +10,48 @@ interface Project {
   textColumn: string;
   labelsColumn: string;
   annotated?: number;
-  total?: number ;
+  total?: number;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class MyProjectsService {
-
-  private apiUrl = 'http://127.0.0.1:8000/api/projects';
-
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private apiService: ApiService) {}
 
   addProject(formData: any): Observable<any> {
-
-    return this.http.post(`${this.apiUrl}/add`, formData);
+    return this.http.post(this.apiService.addProject, formData);
   }
 
   getProjects(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl);
+    return this.http.get<any[]>(this.apiService.projects);
   }
 
   getProjectById(id: number): Observable<Project> {
-    return this.http.get<Project>(`${this.apiUrl}/${id}`);
+    return this.http.get<Project>(this.apiService.getProjectById(id));
   }
 
   annotateProject(id: number, limit: number): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${id}/annotate?limit=${limit}`, {});
+    return this.http.post(this.apiService.annotateProject(id, limit), {});
   }
 
   downloadAnnotatedFile(id: number): Observable<Blob> {
-    return this.http.get(`${this.apiUrl}/${id}/download`, { responseType: 'blob' });
+    return this.http.get(this.apiService.downloadAnnotatedFile(id), { responseType: 'blob' });
   }
 
   getAnnotatedData(projectId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/${projectId}/annotated-data`);
-  }
-  deleteProject(projectId: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${projectId}`);
-  }
-  
-  fetchColumns(formDataFile: FormData): Observable<any>{
-    return  this.http.post<{ unique_values: string[] }>(`${this.apiUrl}/get_columns`, formDataFile)
+    return this.http.get<any[]>(this.apiService.getAnnotatedData(projectId));
   }
 
-  fetchUniqueLabels(formData: FormData): Observable<any>{
-    return this.http.post<{ unique_values: string[] }>(`${this.apiUrl}/get_unique_values`, formData)
+  deleteProject(projectId: number): Observable<any> {
+    return this.http.delete(this.apiService.deleteProject(projectId));
   }
-  
+
+  fetchColumns(formDataFile: FormData): Observable<any> {
+    return this.http.post<{ unique_values: string[] }>(this.apiService.getColumns, formDataFile);
+  }
+
+  fetchUniqueLabels(formData: FormData): Observable<any> {
+    return this.http.post<{ unique_values: string[] }>(this.apiService.getUniqueValues, formData);
+  }
 }

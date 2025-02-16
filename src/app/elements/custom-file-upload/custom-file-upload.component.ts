@@ -19,7 +19,5 @@ export class CustomFileUploadComponent {
         this.fileSelected.emit(file);
       }
     }
-   
   }
-
 }
