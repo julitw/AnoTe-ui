@@ -167,14 +167,21 @@ export class MyProjectsComponent implements OnInit {
    
   }
 
+
   parseLabels(labels: any): string[] {
     try {
-      return typeof labels === 'string' ? JSON.parse(labels) : Array.isArray(labels) ? labels : [];
+    
+      const firstParse = JSON.parse(labels);
+      const secondParse = JSON.parse(firstParse);
+  
+      return Array.isArray(secondParse) ? secondParse : [];
     } catch (error) {
       console.error('Błąd parsowania etykiet:', error);
       return [];
     }
   }
+  
+  
 
   openModal(): void {
     this.isNewProjectPopupOpen = true;
