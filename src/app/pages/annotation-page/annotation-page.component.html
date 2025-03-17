@@ -3,8 +3,8 @@
   
     <div class="annotation-container">
       <div class="options-container">
-        <button (click)="annotatePartially()" class="btn btn-primary" [disabled]="loading">Annotate next 10 records</button>
-        <button (click)="downloadAnnotatedFile()" class="btn btn-success">Download file</button>
+        <button (click)="annotatePartially()" class="btn" [disabled]="loading">Annotate next 10 records</button>
+        <button (click)="downloadAnnotatedFile()" class="btn">Download file</button>
       </div>
   
       <div class="data-container">
@@ -16,6 +16,7 @@
                   <th>No.</th>
                   <th>Text</th>
                   <th>Predicted label</th>
+                  <th >Evaluation</th>
                 </tr>
               </thead>
               <tbody>
@@ -24,7 +25,19 @@
 
                   <td>{{ i + 1 }}</td>
                   <td>{{ record.text }}</td>
-                  <td>{{ record.predicted_label }}</td>
+                  <td [ngClass]="{'strikethrough': (record.predicted_label !== record.true_label) && record.true_label, 'correct': (record.predicted_label === record.true_label && record.true_label) }">{{ record.predicted_label }}</td>
+                  <td >
+                    <div *ngIf="!record.true_label" class="evaluation-container">
+                        <div *ngIf="evaluatedExample.index !== i" class="success-container icon"  (click)="setTrueLabel(record.predicted_label, i)"></div>
+                        <div  *ngIf="evaluatedExample.index !== i" class="failure-container icon" (click)="openLabelsOptions(i)"></div>
+                         <div *ngIf="evaluatedExample.index === i && clickedIcon === 'failure'" class="labels-options">
+                          <div class="option" *ngFor="let option of project.labels">
+                            <p (click)="setTrueLabel(option)">{{option}}</p>
+                          </div>
+                        </div>
+                    </div>
+                    {{record.true_label}}
+                  </td>
                 </tr>
               </tbody>
             </table>

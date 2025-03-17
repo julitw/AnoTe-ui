@@ -32,4 +32,8 @@ export class ApiService {
   deleteProject(id: number): string {
     return `${this.baseUrl}/projects/${id}`;
   }
+
+  setTrueLabel(id: number, index: number, label: string){
+    return `${this.baseUrl}/projects/${id}/add-true-label?index=${index}&label=${label}`;
+  }
 }

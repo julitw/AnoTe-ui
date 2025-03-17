@@ -54,4 +54,8 @@ export class MyProjectsService {
   fetchUniqueLabels(formData: FormData): Observable<any> {
     return this.http.post<{ unique_values: string[] }>(this.apiService.getUniqueValues, formData);
   }
+
+  setTrueLabel(id: number, index: number, label: string): Observable<any>{
+    return this.http.post(this.apiService.setTrueLabel(id, index, label), {})
+  }
 }

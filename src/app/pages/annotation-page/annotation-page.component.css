@@ -43,5 +43,49 @@ tr.new-annotation {
 thead tr{
     border-left: 4px solid black;
   }
-  
-  
+
+
+.evaluation-container{
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+
+    .success-container{
+        background-image: url(../../../assets/success.svg);
+        cursor: pointer;
+    }
+    
+    .failure-container {
+        background-image: url(../../../assets/failure.svg);
+        cursor: pointer;
+    }
+
+    .labels-options{
+        font-size: 14px;
+        padding: 16px 32px;
+        border-radius: 8px;
+        color: rgb(192, 192, 192);
+        letter-spacing: 2px;
+        text-align: center;
+        border: 1px solid rgba(192, 192, 192, 0.55);
+        .option{
+            cursor: pointer;
+            margin-bottom: 4px;
+            border-bottom: 1px solid transparent;
+            &:hover{
+                border-bottom: 1px solid rgb(192, 192, 192, 0.55);
+                transition: border-bottom 0.5s
+            };
+        }
+    }
+}
+
+
+.strikethrough {
+    text-decoration: line-through;
+    color: #5a0101;
+}
+.correct{
+    color: #4CAF50
+}

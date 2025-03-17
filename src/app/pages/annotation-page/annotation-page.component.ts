@@ -1,14 +1,20 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { NumberValueAccessor } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { MyProjectsService } from 'src/app/services/my-projects.service';
 
 interface Project {
   id: number;
   name: string;
-  labels: string;
+  labels: string[];
   textColumn: string;
   labelsColumn: string;
   lastAnnotatedIndex?: number;
+}
+
+interface EvalutedExample {
+  index: number | null;
+  trueLabel: string | null;
 }
 
 @Component({
@@ -22,6 +28,11 @@ export class AnnotationPageComponent implements OnInit {
   loading = false;
   isFirstDataLoaded = false;
   limit = 10;
+  checkingMode = false;
+  labels = ['fdfd', 'dsds', 'fdfd', 'fdfdf']
+  evaluatedExample: EvalutedExample = {index: null, trueLabel: null}
+  evaluatedExamplesList: EvalutedExample[] = [];
+  clickedIcon: 'success' | 'failure' | null = null;
 
   @ViewChild('tableContainer') tableContainer!: ElementRef;
 
@@ -36,19 +47,35 @@ export class AnnotationPageComponent implements OnInit {
         name: response.name,
         textColumn: response.column_text_name,
         labelsColumn: response.column_label_name,
-        labels: response.available_labels,
-        lastAnnotatedIndex: response.last_annotated_index
+        labels: this.parseLabels(response.available_labels),
+        lastAnnotatedIndex: response.last_annotated_index,
       };
 
       this.loadAnnotatedData();
     });
   }
 
+  parseLabels(labels: any): string[] {
+    try {
+    
+      const firstParse = JSON.parse(labels);
+      const secondParse = JSON.parse(firstParse);
+  
+      return Array.isArray(secondParse) ? secondParse : [];
+    } catch (error) {
+      console.error('Błąd parsowania etykiet:', error);
+      return [];
+    }
+  }
+
   loadAnnotatedData() {
     if (!this.project) return;
     this.projectService.getAnnotatedData(this.project.id).subscribe(
       (data: any) => {
-        this.annotatedData = data.slice(0, this.project.lastAnnotatedIndex);
+        this.annotatedData = data.slice(0, this.project.lastAnnotatedIndex).map((item:any) => ({
+          ...item,
+          true_label: item.true_label === 'nan' || item.true_label === null ? "" : item.true_label
+        }));
       },
       error => {
         console.error('Błąd podczas pobierania danych anotacji:', error);
@@ -72,7 +99,7 @@ export class AnnotationPageComponent implements OnInit {
         }
 
         this.loading = false;
-        this.scrollToBottom(); // Przewinięcie do dołu
+        this.scrollToBottom(); 
         this.isFirstDataLoaded = true;
       },
       error => {
@@ -113,4 +140,43 @@ export class AnnotationPageComponent implements OnInit {
       alert('Nie udało się pobrać pliku.');
     });
   }
+
+  checkAnnotation(){
+  }
+
+  openLabelsOptions(i: number){
+    this.evaluatedExample.index = i;
+    this.clickedIcon = 'failure'
+
+  }
+
+  setTrueLabel(label: string, i: number | null = null){
+    if(i !== null){ 
+      this.evaluatedExample.index = i;
+    }
+    this.evaluatedExample.trueLabel = label;
+    this.evaluatedExamplesList.push({...this.evaluatedExample})
+    console.log('ok', this.evaluatedExample)
+    
+    if(
+      this.project.id &&
+      this.evaluatedExample.index !== null && 
+      this.evaluatedExample.trueLabel
+    ){
+      this.projectService.setTrueLabel(this.project.id, this.evaluatedExample.index, label).subscribe(
+        response => {
+          if (this.evaluatedExample.index !== null) { 
+            this.annotatedData[this.evaluatedExample.index].true_label = label;
+          }
+          this.evaluatedExample = {index: null, trueLabel: null};
+          this.clickedIcon = null;
+          alert('Zaktualizowano label');
+        },
+        error => {
+          alert(error);
+        }
+      );
+    }
+  }
+  
 }

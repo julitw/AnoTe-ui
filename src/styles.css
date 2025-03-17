@@ -114,6 +114,14 @@ body {
   }
 
 
+  .icon{
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    width: 24px;
+    height: 24px;
+  }
+
 ::-webkit-scrollbar {
     width: 6px; /* Szerokość paska */
     height: 6px;

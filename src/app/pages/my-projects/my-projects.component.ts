@@ -123,6 +123,7 @@ export class MyProjectsComponent implements OnInit {
     formData.append('column_text_name', this.newProject.columnTextName);
     formData.append('column_label_name', this.newProject.columnLabelName);
     formData.append('available_labels', JSON.stringify(this.newProject.availableLabels));
+    console.log(JSON.stringify(this.newProject.availableLabels))
   
     for (let pair of (formData as any).entries()) {
       console.log(`${pair[0]}:`, pair[1]);
