@@ -4,8 +4,8 @@
   fill="none"
   xmlns="http://www.w3.org/2000/svg"
 >
-  <circle cx="50" cy="50" r="45" stroke="#5a0101" stroke-width="6" fill="none" />
+  <circle cx="50" cy="50" r="45" stroke="#E30B5D" stroke-width="6" fill="none" />
 
-  <line x1="30" y1="30" x2="70" y2="70" stroke="#5a0101" stroke-width="6" stroke-linecap="round" />
-  <line x1="70" y1="30" x2="30" y2="70" stroke="#5a0101" stroke-width="6" stroke-linecap="round" />
+  <line x1="30" y1="30" x2="70" y2="70" stroke="#E30B5D" stroke-width="6" stroke-linecap="round" />
+  <line x1="70" y1="30" x2="30" y2="70" stroke="#E30B5D" stroke-width="10" stroke-linecap="round" />
 </svg>

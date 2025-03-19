@@ -1,6 +1,8 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { animate, keyframes, style, transition, trigger } from '@angular/animations';
+import { Component, OnInit, ViewChild, ElementRef, Renderer2 } from '@angular/core';
 import { NumberValueAccessor } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { MyProjectsService } from 'src/app/services/my-projects.service';
 
 interface Project {
@@ -10,38 +12,59 @@ interface Project {
   textColumn: string;
   labelsColumn: string;
   lastAnnotatedIndex?: number;
+  number_evaluated_data: number
+  number_positive_evaluated_data: number
+  number_annotated_data: number
+  total: number;
 }
 
 interface EvalutedExample {
-  index: number | null;
+  id: string | null;
   trueLabel: string | null;
 }
 
 @Component({
   selector: 'app-annotation-page',
   templateUrl: './annotation-page.component.html',
-  styleUrls: ['./annotation-page.component.css']
+  styleUrls: ['./annotation-page.component.css'],
+  animations: [
+    trigger('numberChange', [
+      transition(':increment, :decrement', [
+        animate(
+          '0.5s ease-out',
+          keyframes([
+            style({ transform: 'translateY(-100%)', opacity: 0, offset: 0 }),
+            style({ transform: 'translateY(0)', opacity: 1, offset: 1 }),
+          ])
+        ),
+      ]),
+    ]),
+  ],
 })
+
 export class AnnotationPageComponent implements OnInit {
   project!: Project;
   annotatedData: any[] = [];
   loading = false;
   isFirstDataLoaded = false;
   limit = 10;
-  checkingMode = false;
-  labels = ['fdfd', 'dsds', 'fdfd', 'fdfdf']
-  evaluatedExample: EvalutedExample = {index: null, trueLabel: null}
-  evaluatedExamplesList: EvalutedExample[] = [];
+  evaluatedExample: EvalutedExample = {id: null, trueLabel: null}
   clickedIcon: 'success' | 'failure' | null = null;
+  currentlyAnotatedIds : string[] = [];
+  projectId!: number;
+  dropdownOpen: boolean = false;
+  limitOptions: number[] = [10, 20, 30];
 
   @ViewChild('tableContainer') tableContainer!: ElementRef;
 
-  constructor(private route: ActivatedRoute, private projectService: MyProjectsService) {}
+  constructor(private route: ActivatedRoute, private projectService: MyProjectsService, private toastr: ToastrService,
+    private el: ElementRef, private renderer: Renderer2
+  ) {}
 
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
+    this.projectId = Number(this.route.snapshot.paramMap.get('id'));
 
-    this.projectService.getProjectById(id).subscribe((response: any) => {
+    this.projectService.getProjectById(this.projectId).subscribe((response: any) => {
       this.project = {
         id: response.id,
         name: response.name,
@@ -49,10 +72,31 @@ export class AnnotationPageComponent implements OnInit {
         labelsColumn: response.column_label_name,
         labels: this.parseLabels(response.available_labels),
         lastAnnotatedIndex: response.last_annotated_index,
+        number_evaluated_data: response.number_evaluated_data || 0,
+        number_positive_evaluated_data: response.number_positive_evaluated_data || 0,
+        number_annotated_data: response.number_annotated_data || 0,
+        total: response.total || 0
+
       };
 
       this.loadAnnotatedData();
     });
+  }
+
+  getProject(){
+    this.projectService.getProjectById(this.projectId).subscribe((response: any) => {
+      this.project = {
+        id: response.id,
+        name: response.name,
+        textColumn: response.column_text_name,
+        labelsColumn: response.column_label_name,
+        labels: this.parseLabels(response.available_labels),
+        lastAnnotatedIndex: response.last_annotated_index,
+        number_evaluated_data: response.number_evaluated_data,
+        number_positive_evaluated_data: response.number_positive_evaluated_data,
+        number_annotated_data: response.number_annotated_data,
+        total: response.total
+      }})
   }
 
   parseLabels(labels: any): string[] {
@@ -72,9 +116,11 @@ export class AnnotationPageComponent implements OnInit {
     if (!this.project) return;
     this.projectService.getAnnotatedData(this.project.id).subscribe(
       (data: any) => {
-        this.annotatedData = data.slice(0, this.project.lastAnnotatedIndex).map((item:any) => ({
+        this.annotatedData = data.map((item:any) => ({
           ...item,
-          true_label: item.true_label === 'nan' || item.true_label === null ? "" : item.true_label
+          evaluated_label_by_user: item.evaluated_label_by_user === 'nan' || item.evaluated_label_by_user === null ? "" : item.evaluated_label_by_user,
+          predicted_label_by_llm: item.predicted_label_by_llm === 'nan' || item.predicted_label_by_llm === null ? "" : item.predicted_label_by_llm,
+          label: item.label=== 'nan' || item.label === null ? "" : item.label
         }));
       },
       error => {
@@ -83,39 +129,64 @@ export class AnnotationPageComponent implements OnInit {
     );
   }
 
-  annotatePartially() {
+  startAnnotation(){
     if (!this.project) return;
-    this.loading = true;
+
+    this.projectService.getNextAnnotatedIds(this.project.id, this.limit).subscribe(
+      (response: { message: string, updated_ids: string[] }) => {
+        this.currentlyAnotatedIds = response.updated_ids;
+        this.scrollToBlinking()
+        this.annotatePartially()
+
+      },
+      (error) => {
+        this.toastr.error('', error.error.detail, { timeOut: 5000 });
+      }
+    )
+  }
+  toggleDropdown(): void {
+    this.dropdownOpen = !this.dropdownOpen;
+  }
+
+  selectLimit(limit: number): void {
+    this.limit = limit;
+    this.dropdownOpen = false; // Zamknij dropdown po wyborze
+  }
+
+  annotatePartially() {
+    
     this.projectService.annotateProject(this.project.id, this.limit).subscribe(
       response => {
-        console.log('Anotacja zakończona:', response.results);
+        console.log('Anotacja zakończona:', response.updated_results);
+        response.updated_results.forEach((element : {id: string, response: string}) => {
+          const index = this.annotatedData.findIndex((el => {
+            return el.id === element.id
+          }))
 
-        this.annotatedData = [...this.annotatedData, ...response.results];
+          if(index){
+            this.annotatedData[index].predicted_label_by_llm = element.response
+          }
 
-        if (this.project && this.project.lastAnnotatedIndex !== undefined) {
-          this.project.lastAnnotatedIndex = response.last_index;
-        } else {
-          console.warn('Nie można zaktualizować indeksu anotacji, ponieważ projekt nie został jeszcze załadowany.');
-        }
-
-        this.loading = false;
-        this.scrollToBottom(); 
-        this.isFirstDataLoaded = true;
+        });
+        this.currentlyAnotatedIds = []
+        this.getProject()
+        this.toastr.success('', 'Annotation has been completed!', { timeOut: 5000 });
       },
       error => {
         console.error('Błąd podczas anotacji:', error);
-        alert('Wystąpił błąd podczas anotacji.');
+        this.toastr.error('', error.error.detail, { timeOut: 5000 });
         this.loading = false;
       }
     );
   }
 
-  scrollToBottom() {
+  scrollToBlinking(): void {
     setTimeout(() => {
-      if (this.tableContainer) {
-        this.tableContainer.nativeElement.scrollTop = this.tableContainer.nativeElement.scrollHeight;
+      const blinkingElement = this.el.nativeElement.querySelector('.blinking');
+      if (blinkingElement) {
+        blinkingElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
-    }, 100);
+    }, 100); // Opóźnienie, aby zapewnić, że dane się wyrenderują
   }
 
   getHighlightedClass(index: number): string {
@@ -137,43 +208,41 @@ export class AnnotationPageComponent implements OnInit {
       document.body.removeChild(a);
     }, error => {
       console.error('Błąd podczas pobierania pliku:', error);
-      alert('Nie udało się pobrać pliku.');
+      this.toastr.error('', error.error.detail, { timeOut: 5000 });
     });
   }
 
-  checkAnnotation(){
-  }
 
-  openLabelsOptions(i: number){
-    this.evaluatedExample.index = i;
+  openLabelsOptions(i: string){
+    this.evaluatedExample.id = i;
     this.clickedIcon = 'failure'
 
   }
 
-  setTrueLabel(label: string, i: number | null = null){
+  setTrueLabel(label: string, i: string | null = null){
     if(i !== null){ 
-      this.evaluatedExample.index = i;
+      this.evaluatedExample.id = i;
     }
     this.evaluatedExample.trueLabel = label;
-    this.evaluatedExamplesList.push({...this.evaluatedExample})
-    console.log('ok', this.evaluatedExample)
     
     if(
       this.project.id &&
-      this.evaluatedExample.index !== null && 
+      this.evaluatedExample.id !== null && 
       this.evaluatedExample.trueLabel
     ){
-      this.projectService.setTrueLabel(this.project.id, this.evaluatedExample.index, label).subscribe(
+      this.projectService.setTrueLabel(this.project.id, this.evaluatedExample.id, label).subscribe(
         response => {
-          if (this.evaluatedExample.index !== null) { 
-            this.annotatedData[this.evaluatedExample.index].true_label = label;
+          if (this.evaluatedExample.id !== null) { 
+            const index = this.annotatedData.findIndex(item => {return item.id === this.evaluatedExample.id} )
+            this.annotatedData[index].evaluated_label_by_user = label;
           }
-          this.evaluatedExample = {index: null, trueLabel: null};
+          this.evaluatedExample = {id: null, trueLabel: null};
           this.clickedIcon = null;
-          alert('Zaktualizowano label');
+          this.getProject()
+          this.toastr.success('Evaluation has been completed!','' , { timeOut: 1000 });
         },
         error => {
-          alert(error);
+          this.toastr.error('', error.error.detail, { timeOut: 5000 });
         }
       );
     }

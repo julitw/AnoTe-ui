@@ -3,7 +3,26 @@
   
     <div class="annotation-container">
       <div class="options-container">
-        <button (click)="annotatePartially()" class="btn" [disabled]="loading">Annotate next 10 records</button>
+        <div class="dropdown-container" (click)="toggleDropdown()">
+          <div class="limit-wrapper">
+            <p>Limit: </p>
+            <div class="limit">
+              {{limit}}
+              <!-- <div class="dropdown-options" *ngIf="dropdownOpen">
+                <div 
+                *ngFor="let option of limitOptions" 
+                class="dropdown-option" 
+                (click)="selectLimit(option)">
+                {{ option }}
+              </div>
+            </div> -->
+          </div>
+
+       
+          </div>
+        </div>
+
+        <button (click)="startAnnotation()" class="btn" [disabled]="loading">Annotate</button>
         <button (click)="downloadAnnotatedFile()" class="btn">Download file</button>
       </div>
   
@@ -15,28 +34,30 @@
                 <tr>
                   <th>No.</th>
                   <th>Text</th>
+                  <th>My Label</th>
                   <th>Predicted label</th>
                   <th >Evaluation</th>
                 </tr>
               </thead>
               <tbody>
                 <tr *ngFor="let record of annotatedData.slice(0, project.lastAnnotatedIndex); let i = index"
-                [ngClass]="{'new-annotation': i >= annotatedData.length - 10 && isFirstDataLoaded}">
+                [ngClass]="{'new-annotation': i >= annotatedData.length - 10 && isFirstDataLoaded, 'blinking': currentlyAnotatedIds.includes(record.id)}" >
 
                   <td>{{ i + 1 }}</td>
                   <td>{{ record.text }}</td>
-                  <td [ngClass]="{'strikethrough': (record.predicted_label !== record.true_label) && record.true_label, 'correct': (record.predicted_label === record.true_label && record.true_label) }">{{ record.predicted_label }}</td>
+                  <td>{{record.label}}</td>
+                  <td [ngClass]="{'strikethrough': (record.predicted_label_by_llm !== record.evaluated_label_by_user) && record.evaluated_label_by_user, 'correct': (record.predicted_label_by_llm === record.evaluated_label_by_user && record.evaluated_label_by_user) }">{{ record.predicted_label_by_llm }}</td>
                   <td >
-                    <div *ngIf="!record.true_label" class="evaluation-container">
-                        <div *ngIf="evaluatedExample.index !== i" class="success-container icon"  (click)="setTrueLabel(record.predicted_label, i)"></div>
-                        <div  *ngIf="evaluatedExample.index !== i" class="failure-container icon" (click)="openLabelsOptions(i)"></div>
-                         <div *ngIf="evaluatedExample.index === i && clickedIcon === 'failure'" class="labels-options">
+                    <div *ngIf="!record.evaluated_label_by_user && record.predicted_label_by_llm" class="evaluation-container">
+                        <div *ngIf="evaluatedExample.id !== record.id" class="success-container icon"  (click)="setTrueLabel(record.predicted_label_by_llm, record.id)"></div>
+                        <div  *ngIf="evaluatedExample.id !== record.id" class="failure-container icon" (click)="openLabelsOptions(record.id)"></div>
+                         <div *ngIf="evaluatedExample.id === record.id && clickedIcon === 'failure'" class="labels-options">
                           <div class="option" *ngFor="let option of project.labels">
                             <p (click)="setTrueLabel(option)">{{option}}</p>
                           </div>
                         </div>
                     </div>
-                    {{record.true_label}}
+                    {{record.evaluated_label_by_user}}
                   </td>
                 </tr>
               </tbody>
@@ -47,7 +68,31 @@
           </ng-container>
         </div>
   
-        <div class="statistics-container"></div>
+        <div class="statistics-container">
+          <div class="project-info-container">
+            <div class="stat-grid">
+              <div class="stat-item">
+                <span class="label">Total:</span>
+                <span class="value" [@numberChange]="project.total">{{ project.total }}</span>
+              </div>
+              <div class="stat-item">
+                <span class="label">Annotated:</span>
+                <span class="value" [@numberChange]="project.number_annotated_data">{{ project.number_annotated_data }}</span>
+              </div>
+              <div class="stat-item">
+                <span class="label">Evaluated:</span>
+                <span class="value" [@numberChange]="project.number_evaluated_data">{{ project.number_evaluated_data }}</span>
+              </div>
+              <div class="stat-item">
+                <span class="label">Positive:</span>
+                <span class="value" [@numberChange]="project.number_positive_evaluated_data">{{ project.number_positive_evaluated_data }}</span>
+              </div>
+             
+            </div>
+          </div>
+          
+          
+        </div>
       </div>
     </div>
   </div>

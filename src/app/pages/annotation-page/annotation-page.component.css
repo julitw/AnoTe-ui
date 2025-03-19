@@ -17,7 +17,7 @@
 }
 .table-wrapper{
     height: 75vh;
-    width: 50%;
+    width: 60%;
 }
 .table-container {
     height: 70vh;
@@ -84,8 +84,118 @@ thead tr{
 
 .strikethrough {
     text-decoration: line-through;
-    color: #5a0101;
+    color: var(--error-color)
 }
 .correct{
     color: #4CAF50
+}
+
+
+
+/* statistics-container */
+
+.statistics-container{
+    display: flex;
+    justify-content: flex-start;
+    align-items: start;
+    width: 40%;
+}
+
+.project-info-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    color: var(--text-color);
+    font-family: var(--font-primary);
+}
+
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 kolumny */
+    grid-gap: 16px;
+    width: 100%;
+    max-width: 600px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.label {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.value {
+    font-size: 48px;
+    font-weight: 10;
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+.value.ng-animating {
+    transform: translateY(-10px);
+    opacity: 0;
+}
+
+
+
+
+/* dropdown */
+
+.dropdown-container{
+    position: relative;
+    border: 1px solid var(--text-color);
+    padding: 8px 56px;
+    border-radius: 20px;
+    cursor: pointer;
+    .limit-wrapper{
+        display: flex;
+        gap: 16px;
+        height: 100%;
+        .limit{
+            position: relative;
+            padding: 0 8px;
+        }
+    }
+    .dropdown-options{
+        position: absolute;
+        top: calc(100% + 5px);
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: var(--background-color);
+    
+        z-index: 20;
+        .dropdown-option{
+            border-bottom: 1px solid var(--background-color);
+            padding: 16px 32px;
+            cursor: pointer;
+            &:hover{
+                border-bottom: 1px solid var(--text-color)
+            }
+           
+        }
+   
+    }
+}
+  
+
+
+@keyframes blinkEffect {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.blinking {
+    animation: blinkEffect 1s infinite ease-in-out;
 }

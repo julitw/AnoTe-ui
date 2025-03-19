@@ -33,7 +33,11 @@ export class ApiService {
     return `${this.baseUrl}/projects/${id}`;
   }
 
-  setTrueLabel(id: number, index: number, label: string){
-    return `${this.baseUrl}/projects/${id}/add-true-label?index=${index}&label=${label}`;
+  setTrueLabel(id: number, exampleId: string, label: string){
+    return `${this.baseUrl}/projects/${id}/add-true-label?exampleId=${exampleId}&label=${label}`;
+  }
+
+  getNextAnnotatedId(id: number, limit: number){
+    return `${this.baseUrl}/projects/${id}/get-next-annotated-ids?limit=${limit}`
   }
 }

@@ -55,7 +55,12 @@ export class MyProjectsService {
     return this.http.post<{ unique_values: string[] }>(this.apiService.getUniqueValues, formData);
   }
 
-  setTrueLabel(id: number, index: number, label: string): Observable<any>{
-    return this.http.post(this.apiService.setTrueLabel(id, index, label), {})
+  setTrueLabel(id: number, exampleId:string, label: string): Observable<any>{
+    return this.http.post(this.apiService.setTrueLabel(id, exampleId, label), {})
   }
+
+  getNextAnnotatedIds(id: number, limit: number): Observable<{ message: string, updated_ids: string[] }> {
+    return this.http.get<{ message: string, updated_ids: string[] }>(this.apiService.getNextAnnotatedId(id, limit));
+  }
+  
 }

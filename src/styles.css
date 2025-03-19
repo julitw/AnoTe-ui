@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Poppins:wght@400;600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400&display=swap');
+@import url(toast.css);
 
 :root {
     --background-color: #000000;
@@ -12,6 +13,8 @@
     --font-primary: 'Inter', sans-serif;
     --font-secondary: 'Plus Jakarta Sans', sans-serif;
     --position-border-color: rgba(236, 187, 229, 0.301);
+    --error-color: #E30B5D;
+    --success-color: #4CAF50;
 }
 
 * {
@@ -104,6 +107,7 @@ body {
     text-transform: uppercase;
     font-size: 16px;
     letter-spacing: 1px;
+    z-index: 10;
   }
   
   .table td {

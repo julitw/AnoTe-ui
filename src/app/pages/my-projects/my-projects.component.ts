@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MyProjectsService } from 'src/app/services/my-projects.service';
 import { HttpClient } from '@angular/common/http';
+import { ToastrService } from 'ngx-toastr';
 
 interface Project {
   id: number;
@@ -36,7 +37,7 @@ export class MyProjectsComponent implements OnInit {
   constructor(
     private projectService: MyProjectsService,
     private router: Router,
-    private http: HttpClient
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -57,13 +58,13 @@ export class MyProjectsComponent implements OnInit {
     this.projectService.fetchColumns(formData).subscribe(
       response => {
         if (!response.columns.length) {
-          alert('Plik nie zawiera nagłówków!');
+          this.toastr.error('', 'No columns names!', { timeOut: 5000 });
         }
         this.columnNames = response.columns;
       },
       error => {
         console.error('Błąd pobierania nazw kolumn:', error);
-        alert('Wystąpił błąd podczas pobierania kolumn.');
+        this.toastr.error('', 'Error during fetching column names', { timeOut: 5000 });
       }
     );
   }
@@ -82,18 +83,18 @@ export class MyProjectsComponent implements OnInit {
       },
       error => {
         console.error('Błąd pobierania unikalnych etykiet:', error);
-        alert('Nie udało się pobrać dostępnych etykiet.');
+        this.toastr.error('', 'Error while fetching labels!', { timeOut: 5000 });
       }
     );
   }
 
   nextStep(): void {
     if (this.currentStep === 1 && (!this.newProject.file || !this.newProject.name)) {
-      alert('Proszę podać nazwę projektu i wybrać plik.');
+      this.toastr.error('', 'Add name and file!', { timeOut: 5000 });
       return;
     }
     if (this.currentStep === 2 && (!this.newProject.columnTextName || !this.newProject.columnLabelName)) {
-      alert('Proszę wybrać odpowiednie kolumny.');
+      this.toastr.error('', 'Add columns', { timeOut: 5000 });
       return;
     }
     if (this.currentStep === 2) {
@@ -110,7 +111,7 @@ export class MyProjectsComponent implements OnInit {
 
   addProject(): void {
     if (!this.newProject.name || !this.newProject.file || !this.newProject.columnTextName || !this.newProject.columnLabelName) {
-      alert('Proszę uzupełnić wszystkie wymagane pola.');
+      this.toastr.error('', 'Complete required fields', { timeOut: 5000 });
       return;
     }
   
@@ -131,7 +132,7 @@ export class MyProjectsComponent implements OnInit {
 
     this.projectService.addProject(formData).subscribe(
       () => {
-        alert('Projekt dodany pomyślnie!');
+        this.toastr.success('', 'The project has been added.', { timeOut: 2000 });
         this.loadProjects();
         this.closeModal();
         this.newProject = {
@@ -143,7 +144,7 @@ export class MyProjectsComponent implements OnInit {
         };
       },
       error => {
-        alert(`Nie udało się dodać projektu. Błąd: ${error.error?.detail || 'Nieznany błąd'}`);
+        this.toastr.error('', 'Error while creating project', { timeOut: 5000 });
       }
     );
   }
@@ -158,7 +159,7 @@ export class MyProjectsComponent implements OnInit {
         labels: this.parseLabels(project.available_labels),
         textColumn: project.column_text_name,
         labelsColumn: project.column_label_name,
-        annotated: project.last_annotated_index || 0,
+        annotated: project.number_annotated_data,
         total: project.row_count || 0
       }));
 
@@ -198,18 +199,18 @@ export class MyProjectsComponent implements OnInit {
   }
 
   deleteProject(projectId: number): void {
-    if (confirm('Czy na pewno chcesz usunąć projekt?')) {
+
       this.projectService.deleteProject(projectId).subscribe(
         () => {
-          alert('Projekt został usunięty.');
+          this.toastr.success('', 'The project has been deleted.', { timeOut: 2000 });
           this.loadProjects();
         },
         error => {
           console.error('Błąd podczas usuwania projektu:', error);
-          alert('Nie udało się usunąć projektu.');
+          this.toastr.error('', 'Error while deleting', { timeOut: 5000 });
         }
       );
-    }
+
   }
 
   changeProjectName(name: string): void {
