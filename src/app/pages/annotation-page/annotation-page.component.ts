@@ -121,7 +121,6 @@ export class AnnotationPageComponent implements OnInit {
           evaluated_label_by_user: item.evaluated_label_by_user === 'nan' || item.evaluated_label_by_user === null ? "" : item.evaluated_label_by_user,
           predicted_label_by_llm: item.predicted_label_by_llm === 'nan' || item.predicted_label_by_llm === null ? "" : item.predicted_label_by_llm,
           label: item[this.project.labelsColumn]=== 'nan' || item[this.project.labelsColumn] === null ? "" : item[this.project.labelsColumn],
-          text: item[this.project.textColumn]=== 'nan' || item[this.project.textColumn] === null ? "" : item[this.project.textColumn]
         }));
       },
       error => {
