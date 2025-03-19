@@ -31,10 +31,6 @@ export class MyProjectsService {
     return this.http.get<Project>(this.apiService.getProjectById(id));
   }
 
-  annotateProject(id: number, limit: number): Observable<any> {
-    return this.http.post(this.apiService.annotateProject(id, limit), {});
-  }
-
   downloadAnnotatedFile(id: number): Observable<Blob> {
     return this.http.get(this.apiService.downloadAnnotatedFile(id), { responseType: 'blob' });
   }
@@ -61,6 +57,33 @@ export class MyProjectsService {
 
   getNextAnnotatedIds(id: number, limit: number): Observable<{ message: string, updated_ids: string[] }> {
     return this.http.get<{ message: string, updated_ids: string[] }>(this.apiService.getNextAnnotatedId(id, limit));
+  }
+
+  annotateProject(id: number, limit: number): Observable<any> {
+    return new Observable(observer => {
+      fetch(this.apiService.annotateProject(id, limit), {
+        method: "POST"
+      })
+        .then(response => {
+          const reader = response.body?.getReader();
+          const decoder = new TextDecoder();
+
+          const readStream = () => {
+            reader?.read().then(({ done, value }) => {
+              if (done) {
+                observer.complete(); 
+                return;
+              }
+              const jsonString = decoder.decode(value, { stream: true });
+              observer.next(JSON.parse(jsonString)); 
+              readStream(); 
+            });
+          };
+
+          readStream();
+        })
+        .catch(error => observer.error(error));
+    });
   }
   
 }
