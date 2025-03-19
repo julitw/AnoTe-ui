@@ -51,3 +51,12 @@
   color: white !important;
 }
 
+#toast-container > .toast-success {
+  background-image: none !important;
+  box-shadow: none;
+  }
+
+#toast-container > .toast-error{
+  background-image: none !important;
+    box-shadow: none;
+    }

@@ -154,7 +154,7 @@ thead tr{
 
 .dropdown-container{
     position: relative;
-    border: 1px solid var(--text-color);
+    /* border: 1px solid var(--text-color); */
     padding: 8px 56px;
     border-radius: 20px;
     cursor: pointer;
@@ -172,7 +172,7 @@ thead tr{
         top: calc(100% + 5px);
         left: 50%;
         transform: translateX(-50%);
-        background-color: var(--background-color);
+        /* background-color: var(--background-color); */
     
         z-index: 20;
         .dropdown-option{
