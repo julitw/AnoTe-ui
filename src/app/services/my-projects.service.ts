@@ -67,23 +67,42 @@ export class MyProjectsService {
         .then(response => {
           const reader = response.body?.getReader();
           const decoder = new TextDecoder();
-
+          let buffer = "";
+  
           const readStream = () => {
             reader?.read().then(({ done, value }) => {
               if (done) {
-                observer.complete(); 
+                observer.complete();
                 return;
               }
-              const jsonString = decoder.decode(value, { stream: true });
-              observer.next(JSON.parse(jsonString)); 
-              readStream(); 
+  
+              buffer += decoder.decode(value, { stream: true });
+  
+              let boundary = buffer.indexOf("\n");
+              while (boundary !== -1) {
+                const jsonLine = buffer.slice(0, boundary).trim();
+                buffer = buffer.slice(boundary + 1);
+  
+                if (jsonLine) {
+                  try {
+                    observer.next(JSON.parse(jsonLine));
+                  } catch (err) {
+                    observer.error("JSON parse error: " + err);
+                  }
+                }
+  
+                boundary = buffer.indexOf("\n");
+              }
+  
+              readStream(); // continue reading
             });
           };
-
+  
           readStream();
         })
         .catch(error => observer.error(error));
     });
   }
+  
   
 }
