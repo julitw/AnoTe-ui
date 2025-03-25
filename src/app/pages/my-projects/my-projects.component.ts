@@ -12,6 +12,7 @@ interface Project {
   labelsColumn: string;
   annotated?: number;
   total?: number;
+  createdAt: number;
 }
 
 @Component({
@@ -160,7 +161,8 @@ export class MyProjectsComponent implements OnInit {
         textColumn: project.column_text_name,
         labelsColumn: project.column_label_name,
         annotated: project.number_annotated_data,
-        total: project.row_count || 0
+        total: project.row_count || 0,
+        createdAt: project.created_at,
       }));
 
       console.log(this.projects)

@@ -114,7 +114,7 @@ export class AnnotationPageComponent implements OnInit {
 
   loadAnnotatedData() {
     if (!this.project) return;
-    this.projectService.getAnnotatedData(this.project.id).subscribe(
+    this.projectService.getProjectData(this.project.id).subscribe(
       (data: any) => {
         this.annotatedData = data.map((item:any) => ({
           ...item,
@@ -153,32 +153,6 @@ export class AnnotationPageComponent implements OnInit {
     this.dropdownOpen = false; // Zamknij dropdown po wyborze
   }
 
-  // annotatePartially() {
-    
-  //   this.projectService.annotateProject(this.project.id, this.limit).subscribe(
-  //     response => {
-  //       console.log('Anotacja zakończona:', response.updated_results);
-  //       response.updated_results.forEach((element : {id: string, response: string}) => {
-  //         const index = this.annotatedData.findIndex((el => {
-  //           return el.id === element.id
-  //         }))
-
-  //         if(index){
-  //           this.annotatedData[index].predicted_label_by_llm = element.response
-  //         }
-
-  //       });
-  //       this.currentlyAnotatedIds = []
-  //       this.getProject()
-  //       this.toastr.success('', 'Annotation has been completed!', { timeOut: 5000 });
-  //     },
-  //     error => {
-  //       console.error('Błąd podczas anotacji:', error);
-  //       this.toastr.error('', error.error.detail, { timeOut: 5000 });
-  //       this.loading = false;
-  //     }
-  //   );
-  // }
 
   annotatePartially(){
     this.projectService.annotateProject(this.project.id, this.limit).subscribe({
@@ -209,7 +183,7 @@ export class AnnotationPageComponent implements OnInit {
       if (blinkingElement) {
         blinkingElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
-    }, 100); // Opóźnienie, aby zapewnić, że dane się wyrenderują
+    }, 100); 
   }
 
   getHighlightedClass(index: number): string {

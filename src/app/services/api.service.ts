@@ -25,8 +25,8 @@ export class ApiService {
     return `${this.baseUrl}/projects/${id}/download`;
   }
 
-  getAnnotatedData(id: number): string {
-    return `${this.baseUrl}/projects/${id}/annotated-data`;
+  getProjectData(id: number): string {
+    return `${this.baseUrl}/projects/${id}/project-data`;
   }
 
   deleteProject(id: number): string {

@@ -9,7 +9,9 @@
                       <th>Labels</th>
                       <th>Number of annotated data</th>
                       <th>Total data</th>
+                      <th>Created</th>
                       <th>Actions</th>
+
                   </tr>
               </thead>
               <tbody>
@@ -24,6 +26,7 @@
                       </td>
                       <td>{{ project.annotated }}</td>
                       <td>{{ project.total }}</td>
+                      <td>{{project.createdAt | date: 'yyyy-MM-dd HH:mm'}} </td>
                       <td>
                         <div class="buttons-container">
                             <button class="btn btn-primary" (click)="annotateProject(project.id)">Annotate</button>

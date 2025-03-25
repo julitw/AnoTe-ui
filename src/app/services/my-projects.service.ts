@@ -35,8 +35,8 @@ export class MyProjectsService {
     return this.http.get(this.apiService.downloadAnnotatedFile(id), { responseType: 'blob' });
   }
 
-  getAnnotatedData(projectId: number): Observable<any[]> {
-    return this.http.get<any[]>(this.apiService.getAnnotatedData(projectId));
+  getProjectData(projectId: number): Observable<any[]> {
+    return this.http.get<any[]>(this.apiService.getProjectData(projectId));
   }
 
   deleteProject(projectId: number): Observable<any> {
@@ -94,7 +94,7 @@ export class MyProjectsService {
                 boundary = buffer.indexOf("\n");
               }
   
-              readStream(); // continue reading
+              readStream(); 
             });
           };
   
