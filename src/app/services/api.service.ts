@@ -40,4 +40,14 @@ export class ApiService {
   getNextAnnotatedId(id: number, limit: number){
     return `${this.baseUrl}/projects/${id}/get-next-annotated-ids?limit=${limit}`
   }
+
+  getHighEntropyExamples(projectId: number, topK: number = 5): string {
+    return `${this.baseUrl}/projects/${projectId}/high-entropy-llm-examples?top_k=${topK}`;
+  }
+
+  annotatePromptExample(projectId: number, exampleId: string, trueLabel: string): string {
+    return `${this.baseUrl}/projects/${projectId}/annotate-prompt-example?example_id=${exampleId}&true_label=${trueLabel}`;
+  }
+
+
 }

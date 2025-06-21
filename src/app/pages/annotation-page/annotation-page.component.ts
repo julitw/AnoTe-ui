@@ -54,6 +54,8 @@ export class AnnotationPageComponent implements OnInit {
   projectId!: number;
   dropdownOpen: boolean = false;
   limitOptions: number[] = [10, 20, 30];
+  highEntropyExamples: any[] = [];
+
 
   @ViewChild('tableContainer') tableContainer!: ElementRef;
 
@@ -80,7 +82,7 @@ export class AnnotationPageComponent implements OnInit {
       };
 
       this.loadAnnotatedData();
-    });
+      this.loadHighEntropyExamples()    });
   }
 
   getProject(){
@@ -173,6 +175,7 @@ export class AnnotationPageComponent implements OnInit {
       complete: () => {
         this.toastr.success('', 'Annotation has been completed!', { timeOut: 5000 });
         this.currentlyAnotatedIds = []
+        this.loadHighEntropyExamples()
       }
     })
   }
@@ -244,5 +247,32 @@ export class AnnotationPageComponent implements OnInit {
       );
     }
   }
+
+  loadHighEntropyExamples() {
+    if (!this.project) return;
+
+    this.projectService.getHighEntropyExamples(this.project.id, 5).subscribe({
+      next: (data: any[]) => {
+        this.highEntropyExamples = data;
+      },
+      error: (error) => {
+        console.error('Błąd podczas pobierania przykładów o najwyższej entropii:', error);
+        this.toastr.error('Nie udało się pobrać przykładów do selekcji', '', { timeOut: 3000 });
+      }
+    });
+  }
+
+  markAsSelectedPromptExample(exampleId: string, label: string) {
+  this.projectService.markAsPromptExample(this.projectId, exampleId, label).subscribe(
+    () => {
+      this.toastr.success('Marked as prompt example!');
+      this.highEntropyExamples = this.highEntropyExamples.filter(ex => ex.id !== exampleId);
+    },
+    (error) => {
+      this.toastr.error('Failed to mark as prompt example');
+    }
+    );
+  }
+
   
 }

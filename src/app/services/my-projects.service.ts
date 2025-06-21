@@ -103,6 +103,18 @@ export class MyProjectsService {
         .catch(error => observer.error(error));
     });
   }
+
+  getHighEntropyExamples(projectId: number, topK: number = 5) {
+    const url = this.apiService.getHighEntropyExamples(projectId, topK);
+    return this.http.get<any[]>(url);
+}
+
+
+  markAsPromptExample(projectId: number, exampleId: string, label: string): Observable<any> {
+  const url = this.apiService.annotatePromptExample(projectId, exampleId, label);
+  return this.http.post(url, {});
+}
+
   
   
 }

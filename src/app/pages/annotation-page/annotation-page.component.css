@@ -96,6 +96,7 @@ thead tr{
 
 .statistics-container{
     display: flex;
+    flex-direction: column;
     justify-content: flex-start;
     align-items: start;
     width: 40%;
@@ -187,6 +188,79 @@ thead tr{
    
     }
 }
+
+
+.selection-container {
+  width: 100%;
+  margin-top: 24px;
+  margin-left: 24px;
+
+  .card-header {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--text-color);
+    padding-left: 8px;
+  }
+
+  .table-wrapper {
+    width: 100%;
+    max-height: 50vh;
+    overflow-y: auto;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    background-color: #1a1a1a;
+  }
+
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    color: var(--text-color);
+
+    th, td {
+      padding: 12px;
+      font-size: 14px;
+      text-align: left;
+    }
+
+    th {
+      /* background-color: #2a2a2a; */
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 500;
+    }
+
+    td {
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    tr:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+  }
+
+  .labels-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+
+    .option button {
+      background-color: var(--accent-color);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: #5a4ecf;
+      }
+    }
+  }
+}
+
   
 
 
