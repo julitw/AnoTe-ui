@@ -91,35 +91,35 @@
             </div>
           </div>
           <div class="selection-container">
-            <div class="card-header">High Entropy Examples</div>
-            <div class="table-wrapper">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>No.</th>
-                    <th>Text</th>
-                    <th>Predicted</th>
-                    <th>Select Label</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let ex of highEntropyExamples; let i = index">
-                    <td>{{ i + 1 }}</td>
-                    <td>{{ ex.text }}</td>
-                    <td>{{ ex.predicted_label_by_llm }}</td>
-                    <td>
-                      <div class="labels-options">
-                        <div class="option" *ngFor="let label of project.labels">
-                          <button (click)="markAsSelectedPromptExample(ex.id, label)">
-                            {{ label }}
-                          </button>
-                        </div>
+          <div class="card-header">High Entropy Examples</div>
+          <div class="table-wrapper">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>No.</th>
+                  <th>Text</th>
+                  <th>Predicted</th>
+                  <th>Select Label</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let ex of highEntropyExamples; let i = index">
+                  <td>{{ i + 1 }}</td>
+                  <td>{{ ex.text }}</td>
+                  <td>{{ labelMap[+ex.predicted_label_by_llm] || ex.predicted_label_by_llm }}</td>
+
+                  <td>
+                    <div class="labels-options">
+                      <div class="option" *ngFor="let id of (labelMap | keyvalue)">
+                        <button (click)="markAsSelectedPromptExample(ex.id, +id.key)">
+                          {{ id.value }}
+                        </button>
                       </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           
           

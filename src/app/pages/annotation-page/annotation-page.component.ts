@@ -47,7 +47,7 @@ export class AnnotationPageComponent implements OnInit {
   annotatedData: any[] = [];
   loading = false;
   isFirstDataLoaded = false;
-  limit = 10;
+  limit = 1;
   evaluatedExample: EvalutedExample = {id: null, trueLabel: null}
   clickedIcon: 'success' | 'failure' | null = null;
   currentlyAnotatedIds : string[] = [];
@@ -55,6 +55,10 @@ export class AnnotationPageComponent implements OnInit {
   dropdownOpen: boolean = false;
   limitOptions: number[] = [10, 20, 30];
   highEntropyExamples: any[] = [];
+
+  labelMap: Record<number, string> = {};
+  reverseLabelMap: Record<string, number> = {};
+
 
 
   @ViewChild('tableContainer') tableContainer!: ElementRef;
@@ -82,7 +86,11 @@ export class AnnotationPageComponent implements OnInit {
       };
 
       this.loadAnnotatedData();
-      this.loadHighEntropyExamples()    });
+      this.loadHighEntropyExamples()   
+      this.loadLabelsMap()
+
+    
+    });
   }
 
   getProject(){
@@ -101,18 +109,29 @@ export class AnnotationPageComponent implements OnInit {
       }})
   }
 
-  parseLabels(labels: any): string[] {
-    try {
-    
-      const firstParse = JSON.parse(labels);
-      const secondParse = JSON.parse(firstParse);
-  
-      return Array.isArray(secondParse) ? secondParse : [];
-    } catch (error) {
-      console.error('Błąd parsowania etykiet:', error);
-      return [];
-    }
+
+  loadLabelsMap(){
+     this.projectService.getLabelMap(this.projectId).subscribe((res) => {
+        this.labelMap = res.label_map;
+        this.reverseLabelMap = Object.fromEntries(
+          Object.entries(res.label_map).map(([k, v]) => [v, Number(k)])
+        );
+});
   }
+
+  parseLabels(labels: any): string[] {
+  try {
+    if (typeof labels === 'string') {
+      labels = JSON.parse(labels);
+    }
+
+    return Object.values(labels); // zwraca ["positive", "negative", ...]
+  } catch (error) {
+    console.error('Błąd parsowania etykiet:', error);
+    return [];
+  }
+}
+
 
   loadAnnotatedData() {
     if (!this.project) return;
@@ -120,9 +139,10 @@ export class AnnotationPageComponent implements OnInit {
       (data: any) => {
         this.annotatedData = data.map((item:any) => ({
           ...item,
-          evaluated_label_by_user: item.evaluated_label_by_user === 'nan' || item.evaluated_label_by_user === null ? "" : item.evaluated_label_by_user,
-          predicted_label_by_llm: item.predicted_label_by_llm === 'nan' || item.predicted_label_by_llm === null ? "" : item.predicted_label_by_llm,
-          label: item.label === 'nan' || item.label === null ? "" : item.label,
+          evaluated_label_by_user: this.labelMap[+item.evaluated_label_by_user] ?? '',
+          predicted_label_by_llm: this.labelMap[+item.predicted_label_by_llm] ?? '',
+          label: this.labelMap[+item.label] ?? '',
+
         }));
       },
       error => {
@@ -165,7 +185,8 @@ export class AnnotationPageComponent implements OnInit {
         }))
   
         if(index){
-            this.annotatedData[index].predicted_label_by_llm = data.response
+            const label = this.labelMap[Number(data.response)] ?? data.response;
+            this.annotatedData[index].predicted_label_by_llm = label;
             this.currentlyAnotatedIds = this.currentlyAnotatedIds.filter(item => item !== data.id);
             this.project.number_annotated_data = this.project.number_annotated_data + 1;
             this.scrollToBlinking()
@@ -230,7 +251,9 @@ export class AnnotationPageComponent implements OnInit {
       this.evaluatedExample.id !== null && 
       this.evaluatedExample.trueLabel
     ){
-      this.projectService.setTrueLabel(this.project.id, this.evaluatedExample.id, label).subscribe(
+      const numericLabel = this.reverseLabelMap[label];
+      this.projectService.setTrueLabel(this.project.id, this.evaluatedExample.id, numericLabel)
+      .subscribe(
         response => {
           if (this.evaluatedExample.id !== null) { 
             const index = this.annotatedData.findIndex(item => {return item.id === this.evaluatedExample.id} )
@@ -262,17 +285,17 @@ export class AnnotationPageComponent implements OnInit {
     });
   }
 
-  markAsSelectedPromptExample(exampleId: string, label: string) {
-  this.projectService.markAsPromptExample(this.projectId, exampleId, label).subscribe(
-    () => {
-      this.toastr.success('Marked as prompt example!');
-      this.highEntropyExamples = this.highEntropyExamples.filter(ex => ex.id !== exampleId);
-    },
-    (error) => {
-      this.toastr.error('Failed to mark as prompt example');
+  markAsSelectedPromptExample(exampleId: string, label: number) {
+    const numericLabel = this.labelMap[label];
+    this.projectService.markAsPromptExample(this.projectId, exampleId, label).subscribe(
+      () => {
+        this.toastr.success('Marked as prompt example!');
+        this.highEntropyExamples = this.highEntropyExamples.filter(ex => ex.id !== exampleId);
+      },
+      (error) => {
+        this.toastr.error('Failed to mark as prompt example');
+      }
+      );
     }
-    );
-  }
 
-  
 }

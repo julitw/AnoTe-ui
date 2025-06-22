@@ -33,7 +33,7 @@ export class ApiService {
     return `${this.baseUrl}/projects/${id}`;
   }
 
-  setTrueLabel(id: number, exampleId: string, label: string){
+  setTrueLabel(id: number, exampleId: string, label: number){
     return `${this.baseUrl}/projects/${id}/add-true-label?exampleId=${exampleId}&label=${label}`;
   }
 
@@ -45,9 +45,12 @@ export class ApiService {
     return `${this.baseUrl}/projects/${projectId}/high-entropy-llm-examples?top_k=${topK}`;
   }
 
-  annotatePromptExample(projectId: number, exampleId: string, trueLabel: string): string {
+  annotatePromptExample(projectId: number, exampleId: string, trueLabel: number): string {
     return `${this.baseUrl}/projects/${projectId}/annotate-prompt-example?example_id=${exampleId}&true_label=${trueLabel}`;
   }
 
+  getLabelMap(projectId: number): string {
+    return `${this.baseUrl}/projects/${projectId}/label-map`;
+  }
 
 }

@@ -51,7 +51,7 @@ export class MyProjectsService {
     return this.http.post<{ unique_values: string[] }>(this.apiService.getUniqueValues, formData);
   }
 
-  setTrueLabel(id: number, exampleId:string, label: string): Observable<any>{
+  setTrueLabel(id: number, exampleId:string, label: number): Observable<any>{
     return this.http.post(this.apiService.setTrueLabel(id, exampleId, label), {})
   }
 
@@ -110,10 +110,16 @@ export class MyProjectsService {
 }
 
 
-  markAsPromptExample(projectId: number, exampleId: string, label: string): Observable<any> {
-  const url = this.apiService.annotatePromptExample(projectId, exampleId, label);
-  return this.http.post(url, {});
-}
+  markAsPromptExample(projectId: number, exampleId: string, label: number): Observable<any> {
+    const url = this.apiService.annotatePromptExample(projectId, exampleId, label);
+    return this.http.post(url, {});
+  }
+
+  getLabelMap(projectId: number): Observable<{ label_map: Record<number, string> }> {
+    return this.http.get<{ label_map: Record<number, string> }>(
+      this.apiService.getLabelMap(projectId)
+    );
+  }
 
   
   
