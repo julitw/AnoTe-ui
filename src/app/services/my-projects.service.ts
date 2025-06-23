@@ -121,6 +121,9 @@ export class MyProjectsService {
     );
   }
 
-  
-  
+  getExplanations(projectId: number, exampleId: string): Observable<string> {
+  return this.http.get<string>(
+      this.apiService.getExplanations(projectId, exampleId)
+    );
+  }
 }

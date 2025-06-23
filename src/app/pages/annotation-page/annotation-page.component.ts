@@ -47,7 +47,7 @@ export class AnnotationPageComponent implements OnInit {
   annotatedData: any[] = [];
   loading = false;
   isFirstDataLoaded = false;
-  limit = 1;
+  limit = 2;
   evaluatedExample: EvalutedExample = {id: null, trueLabel: null}
   clickedIcon: 'success' | 'failure' | null = null;
   currentlyAnotatedIds : string[] = [];
@@ -298,4 +298,19 @@ export class AnnotationPageComponent implements OnInit {
       );
     }
 
+    generateExplanation(exampleId: string) {
+
+      this.projectService.getExplanations(this.projectId, exampleId).subscribe({
+        next: (data: any) => {
+          const explanation = data
+          if (explanation) {
+            this.toastr.info(`Explanation for example ${exampleId}: ${explanation}`, '', { timeOut: 5000 });
+          } else {
+            this.toastr.warning('No explanation available for this example.', '', { timeOut: 3000 });
+          }
+        },
+        error: (error) => { 
+          console.error('Błąd podczas pobierania wyjaśnień:', error);
+        }
+      })}
 }

@@ -53,4 +53,8 @@ export class ApiService {
     return `${this.baseUrl}/projects/${projectId}/label-map`;
   }
 
+  getExplanations(projectId: number, exampleId: string): string {
+    return `${this.baseUrl}/projects/${projectId}/get-logprobs-for-text/${exampleId}`;
+  }
+
 }

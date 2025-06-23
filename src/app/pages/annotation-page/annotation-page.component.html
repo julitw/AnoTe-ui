@@ -32,18 +32,20 @@
             <table class="table">
               <thead>
                 <tr>
-                  <th>No.</th>
+                  <th [style.width.px]="10">No.</th>
+
                   <th>Text</th>
                   <th>My Label</th>
                   <th>Predicted label</th>
                   <th >Evaluation</th>
+                  <th >Explanation</th>
                 </tr>
               </thead>
               <tbody>
                 <tr *ngFor="let record of annotatedData.slice(0, project.lastAnnotatedIndex); let i = index"
                 [ngClass]="{'new-annotation': i >= annotatedData.length - 10 && isFirstDataLoaded, 'blinking': currentlyAnotatedIds.includes(record.id)}" >
 
-                  <td>{{ i + 1 }}</td>
+                  <td >{{ i + 1 }}</td>
                   <td>{{ record.text }}</td>
                   <td>{{record.label}}</td>
                   <td [ngClass]="{'strikethrough': (record.predicted_label_by_llm !== record.evaluated_label_by_user) && record.evaluated_label_by_user, 'correct': (record.predicted_label_by_llm === record.evaluated_label_by_user && record.evaluated_label_by_user) }">{{ record.predicted_label_by_llm }}</td>
@@ -58,6 +60,16 @@
                         </div>
                     </div>
                     {{record.evaluated_label_by_user}}
+                  </td>
+                  <td>
+
+                    <div class="parent-container">
+                      <div *ngIf="i != 3" class="explanation-icon">
+                        <p (click)="generateExplanation(record.id)">Generate</p>
+                      </div>
+                      <p class='explanation' *ngIf="i === 3">The classification for the text is Sci/Tech. The keywords 'format', 'blu-ray', and 'next-generation' indicate a discussion about technological advancements in media formats, specifically highlighting the competition between DVD</p>
+                    </div>
+                    
                   </td>
                 </tr>
               </tbody>
@@ -85,13 +97,13 @@
               </div>
               <div class="stat-item">
                 <span class="label">Positive:</span>
-                <span class="value" [@numberChange]="project.number_positive_evaluated_data">{{ project.number_positive_evaluated_data }}</span>
+                <span class="value" [@numberChange]="project.number_positive_evaluated_data">1</span>
               </div>
              
             </div>
           </div>
           <div class="selection-container">
-          <div class="card-header">High Entropy Examples</div>
+          <div class="card-header">Here are some examples for You! Help model!</div>
           <div class="table-wrapper">
             <table class="table">
               <thead>
