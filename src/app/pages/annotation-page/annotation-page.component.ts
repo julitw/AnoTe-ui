@@ -59,6 +59,9 @@ export class AnnotationPageComponent implements OnInit {
   labelMap: Record<number, string> = {};
   reverseLabelMap: Record<string, number> = {};
 
+  explanationLoader: boolean = false;
+  explanationId: string | null = null;
+
 
 
   @ViewChild('tableContainer') tableContainer!: ElementRef;
@@ -142,6 +145,7 @@ export class AnnotationPageComponent implements OnInit {
           evaluated_label_by_user: this.labelMap[+item.evaluated_label_by_user] ?? '',
           predicted_label_by_llm: this.labelMap[+item.predicted_label_by_llm] ?? '',
           label: this.labelMap[+item.label] ?? '',
+          explanation: item.explanation === 'nan' ? '' : item.explanation
 
         }));
       },
@@ -299,18 +303,25 @@ export class AnnotationPageComponent implements OnInit {
     }
 
     generateExplanation(exampleId: string) {
+        this.explanationLoader = true;
+        this.explanationId = exampleId;
 
-      this.projectService.getExplanations(this.projectId, exampleId).subscribe({
-        next: (data: any) => {
-          const explanation = data
-          if (explanation) {
-            this.toastr.info(`Explanation for example ${exampleId}: ${explanation}`, '', { timeOut: 5000 });
-          } else {
-            this.toastr.warning('No explanation available for this example.', '', { timeOut: 3000 });
+        this.projectService.getExplanations(this.projectId, exampleId).subscribe({
+          next: (data: any) => {
+            this.explanationLoader = false;
+            this.explanationId = null;
+
+            const index = this.annotatedData.findIndex(item => item.id === exampleId);
+            if (index !== -1) {
+              this.annotatedData[index].explanation = data || 'No explanation available';
+            }
+          },
+          error: (error) => { 
+            console.error('Błąd podczas pobierania wyjaśnień:', error);
+            this.explanationLoader = false;
+            this.explanationId = null;
+            this.toastr.error('Nie udało się wygenerować wyjaśnienia', '', { timeOut: 3000 });
           }
-        },
-        error: (error) => { 
-          console.error('Błąd podczas pobierania wyjaśnień:', error);
-        }
-      })}
+        });
+      }
 }

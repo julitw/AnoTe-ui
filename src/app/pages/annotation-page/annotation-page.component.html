@@ -64,12 +64,13 @@
                   <td>
 
                     <div class="parent-container">
-                      <div *ngIf="i != 3" class="explanation-icon">
-                        <p (click)="generateExplanation(record.id)">Generate</p>
+                      <div class="explanation" *ngIf="record.explanation">{{record.explanation}}</div>
+                      <div *ngIf="record.predicted_label_by_llm && !record.explanation"class="explanation-icon">
+                        <div class="generate" *ngIf= "!explanationLoader && record.id != explanationId"  (click)="generateExplanation(record.id)">Generate</div>
+                        <div class="loading" *ngIf= "explanationLoader && record.id === explanationId">LOADING...</div>
+                        <div class="block" *ngIf="explanationLoader && record.id != explanationId">BLOCK</div>
                       </div>
-                      <p class='explanation' *ngIf="i === 3">The classification for the text is Sci/Tech. The keywords 'format', 'blu-ray', and 'next-generation' indicate a discussion about technological advancements in media formats, specifically highlighting the competition between DVD</p>
-                    </div>
-                    
+                      </div>
                   </td>
                 </tr>
               </tbody>

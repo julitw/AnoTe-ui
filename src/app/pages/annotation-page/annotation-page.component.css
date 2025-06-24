@@ -139,12 +139,38 @@ thead tr{
     background-size: contain; /* Dostosowanie obrazu do rozmiaru kontenera */
     background-repeat: no-repeat;
     border: 1px solid black;
-    border-radius: 20px;
-    padding: 12px;
     cursor: pointer;
-    background-color: var(--accent-color);
-    color: black
+    color: black;
+
+    .explanation{
+      color: gray;
+      font-style: italic;
+
+    }
+
+    .block{
+      width: 100%;
+      padding: 12px;;
+      border-radius: 20px;
+      text-align: center;
+      background-color: #E30B5D;
+    }
     
+    .generate{
+      width: 100%;
+      padding: 12px;;
+      border-radius: 20px;
+      text-align: center;
+      background-color: var(--accent-color);
+    }
+
+    .loading{
+      width: 100%;
+      padding: 12px;;
+      border-radius: 20px;
+      text-align: center;
+      background-color: #4CAF50;
+    }
 }
 
 .strikethrough {
@@ -345,3 +371,4 @@ thead tr{
 .blinking {
     animation: blinkEffect 1s infinite ease-in-out;
 }
+
