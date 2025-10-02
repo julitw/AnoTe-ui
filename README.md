@@ -1,3 +1,6 @@
+
+An application that enables data annotation using large language models and generates explainability for the annotations (this repo is a user interface).
+
 # AnoteUi
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.2.16.
